@@ -19,8 +19,6 @@ import java.util.Objects;
 @Getter
 public class CartItem {
 
-    private static final long NOT_YET_PERSIST_ID = -1;
-
     @Id
     @GeneratedValue
     private Long id;
@@ -40,11 +38,13 @@ public class CartItem {
     }
 
     public CartItem(final Member member, final Product product) {
-        this(-1, member, product, Quantity.create());
+        this(member, product, Quantity.create());
     }
 
     public CartItem(final Member member, final Product product, final Quantity quantity) {
-        this(NOT_YET_PERSIST_ID, member, product, quantity);
+        this.member = member;
+        this.product = product;
+        this.quantity = quantity;
     }
 
     public CartItem(final long id, final Member member, final Product product, final Quantity quantity) {

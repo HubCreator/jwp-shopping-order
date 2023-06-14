@@ -1,11 +1,10 @@
 package cart.application;
 
-import cart.dao.CartItemDao;
-import cart.dao.MemberDao;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
-import cart.exception.notfound.MemberNotFoundException;
+import cart.repository.CartItemRepository;
+import cart.repository.MemberRepository;
 import cart.ui.dto.cartitem.CartItemRequest;
 import cart.ui.dto.cartitem.CartItemsPriceResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,15 +26,15 @@ public class CartItemServiceTest {
     @Autowired
     private CartItemService cartItemService;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     @Autowired
-    private CartItemDao cartItemDao;
+    private CartItemRepository cartItemRepository;
 
     private Member member;
 
     @BeforeEach
     void setUp() {
-        member = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
+        member = memberRepository.findOne(1L);
     }
 
     @DisplayName("장바구니에 상품을 추가할 때, 이미 해당 상품이 존재하면 수량만 하나 추가한다.")
@@ -46,8 +45,8 @@ public class CartItemServiceTest {
 
         // when
         cartItemService.addCartItem(member, cartItemRequest);
-        final CartItem cartItem = cartItemDao.findById(1L).get();
-        final List<CartItem> cartItems = cartItemDao.findAllByMemberId(member.getId());
+        final CartItem cartItem = cartItemRepository.findOne(1L);
+        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
 
         // then
         assertThat(cartItem.getQuantity()).isEqualTo(new Quantity(3));

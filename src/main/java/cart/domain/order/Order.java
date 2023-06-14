@@ -20,8 +20,6 @@ import java.util.Objects;
 @Getter
 public class Order {
 
-    private static final long NOT_YET_PERSIST_ID = -1;
-
     @Id
     @GeneratedValue
     private Long id;
@@ -41,21 +39,12 @@ public class Order {
     protected Order() {
     }
 
-    public Order(final Member member, final UsedPoint usedPoint, final SavedPoint savedPoint, final DeliveryFee deliveryFee) {
-        this(NOT_YET_PERSIST_ID, member, usedPoint, savedPoint, deliveryFee, null);
-    }
-
-    public Order(final long id, final Member member,
-                 final UsedPoint usedPoint,
-                 final SavedPoint savedPoint,
-                 final DeliveryFee deliveryFee,
-                 final LocalDateTime orderedAt) {
-        this.id = id;
+    public Order(final Member member, final UsedPoint usedPoint,
+                 final SavedPoint savedPoint, final DeliveryFee deliveryFee) {
         this.member = member;
         this.usedPoint = usedPoint;
         this.savedPoint = savedPoint;
         this.deliveryFee = deliveryFee;
-        this.orderedAt = orderedAt;
     }
 
     public void checkOwner(final Member member) {

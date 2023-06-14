@@ -17,7 +17,15 @@ public class MemberRepository {
     private final EntityManager em;
 
     public void save(final Member member) {
-        em.persist(member);
+        if (member.getId() == null) {
+            em.persist(member);
+            return;
+        }
+        em.merge(member);
+    }
+
+    public Member findOne(final Long id) {
+        return em.find(Member.class, id);
     }
 
     public Member findByEmail(final String email) {

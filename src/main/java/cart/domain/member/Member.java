@@ -14,8 +14,6 @@ import java.util.Objects;
 @Getter
 public class Member {
 
-    private static final long NOT_YET_PERSIST_ID = -1;
-
     @Id
     @GeneratedValue
     private Long id;
@@ -30,7 +28,13 @@ public class Member {
     }
 
     public Member(final MemberEmail email, final MemberPassword password) {
-        this(NOT_YET_PERSIST_ID, email, password);
+        this(email, password, null);
+    }
+
+    public Member(final MemberEmail email, final MemberPassword password, final MemberPoint point) {
+        this.email = email;
+        this.password = password;
+        this.point = point;
     }
 
     public Member(final long id, final MemberEmail email, final MemberPassword password) {

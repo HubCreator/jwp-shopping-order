@@ -18,4 +18,10 @@ public class OrderProductRepository {
             em.persist(orderProduct);
         }
     }
+
+    public List<OrderProduct> findAllByMemberId(final Long memberId) {
+        return em.createQuery("select op from OrderProduct op where op.order.member = :memberId", OrderProduct.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
 }

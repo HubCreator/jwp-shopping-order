@@ -15,10 +15,14 @@ public class CartItemRepository {
     private final EntityManager em;
 
     public void save(final CartItem cartItem) {
-        em.persist(cartItem);
+        if (cartItem.getId() == null) {
+            em.persist(cartItem);
+            return;
+        }
+        em.merge(cartItem);
     }
 
-    public CartItem findById(final Long id) {
+    public CartItem findOne(final Long id) {
         return em.find(CartItem.class, id);
     }
 

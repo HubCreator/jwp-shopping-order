@@ -53,7 +53,7 @@ public class CartItemService {
 
     @Transactional
     public void updateQuantity(final Member member, final Long cartItemId, final CartItemQuantityUpdateRequest request) {
-        final CartItem cartItem = cartItemRepository.findById(cartItemId);
+        final CartItem cartItem = cartItemRepository.findOne(cartItemId);
         cartItem.checkOwner(member);
         if (request.getQuantity() == 0) {
             cartItemRepository.delete(cartItem);
@@ -65,7 +65,7 @@ public class CartItemService {
 
     @Transactional
     public void removeCartItem(final Member member, final Long cartItemId) {
-        final CartItem cartItem = cartItemRepository.findById(cartItemId);
+        final CartItem cartItem = cartItemRepository.findOne(cartItemId);
         cartItem.checkOwner(member);
         cartItemRepository.delete(cartItem);
     }

@@ -1,10 +1,5 @@
 package cart.application;
 
-import cart.dao.CartItemDao;
-import cart.dao.MemberDao;
-import cart.dao.OrderDao;
-import cart.dao.OrderProductDao;
-import cart.dao.ProductDao;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
@@ -18,9 +13,11 @@ import cart.domain.product.Product;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
-import cart.exception.notfound.MemberNotFoundException;
-import cart.exception.notfound.OrderNotFoundException;
-import cart.exception.notfound.ProductNotFoundException;
+import cart.repository.CartItemRepository;
+import cart.repository.MemberRepository;
+import cart.repository.OrderProductRepository;
+import cart.repository.OrderRepository;
+import cart.repository.ProductRepository;
 import cart.ui.dto.order.OrderDetailResponse;
 import cart.ui.dto.order.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,23 +41,23 @@ public class OrderServiceTest {
     @Autowired
     private OrderService orderService;
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
     @Autowired
-    private ProductDao productDao;
+    private ProductRepository productRepository;
     @Autowired
-    private CartItemDao cartItemDao;
+    private CartItemRepository cartItemRepository;
     @Autowired
-    private OrderDao orderDao;
+    private OrderRepository orderRepository;
     @Autowired
-    private OrderProductDao orderProductDao;
+    private OrderProductRepository orderProductRepository;
 
     @Nested
     @DisplayName("상품을 주문할 때에는")
     class DescribeOrderMethodTest1 {
 
-        private final Member member = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
-        private final Product product1 = productDao.findById(1L).orElseThrow(ProductNotFoundException::new);
-        private final Product product2 = productDao.findById(2L).orElseThrow(ProductNotFoundException::new);
+        private final Member member = memberRepository.findOne(1L);
+        private final Product product1 = productRepository.findOne(1L);
+        private final Product product2 = productRepository.findOne(2L);
 
         @Nested
         @DisplayName("만약 총 주문 가격이 5이상 초과이라면")
@@ -72,17 +69,22 @@ public class OrderServiceTest {
 
             @BeforeEach
             void setUp() {
-                final Long cartItemId1 = cartItemDao.insert(new CartItem(member, product1, quantity1));
-                final Long cartItemId2 = cartItemDao.insert(new CartItem(member, product2, quantity2));
-                final OrderRequest orderRequest = new OrderRequest(List.of(cartItemId1, cartItemId2), usedPoint);
+                final CartItem cartItem1 = new CartItem(member, product1, quantity1);
+                final CartItem cartItem2 = new CartItem(member, product2, quantity2);
+                cartItemRepository.save(cartItem1);
+                cartItemRepository.save(cartItem2);
+
+                final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
+                final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
+                final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
                 orderId = orderService.order(member, orderRequest);
             }
 
             @DisplayName("배송비 3천원을 추가하지 않는다.")
             @Test
             void it_returns_discounted_delivery_fee() {
-                final Member updatedMember = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
-                final Order order = orderDao.findById(orderId).orElseThrow(OrderNotFoundException::new);
+                final Member updatedMember = memberRepository.findOne(1L);
+                final Order order = orderRepository.findOne(orderId);
 
                 int remainPoint = member.getPointValue() - usedPoint;
                 final int cartItemPrice1 = product1.getPriceValue() * quantity1.getQuantity();
@@ -108,17 +110,22 @@ public class OrderServiceTest {
 
             @BeforeEach
             void setUp() {
-                final Long cartItemId1 = cartItemDao.insert(new CartItem(member, product1, quantity1));
-                final Long cartItemId2 = cartItemDao.insert(new CartItem(member, product2, quantity2));
-                final OrderRequest orderRequest = new OrderRequest(List.of(cartItemId1, cartItemId2), usedPoint);
+                final CartItem cartItem1 = new CartItem(member, product1, quantity1);
+                final CartItem cartItem2 = new CartItem(member, product2, quantity2);
+                cartItemRepository.save(cartItem1);
+                cartItemRepository.save(cartItem2);
+
+                final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
+                final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
+                final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
                 orderId = orderService.order(member, orderRequest);
             }
 
             @DisplayName("배송비 3천원 추가한다.")
             @Test
             void it_returns_discounted_delivery_fee() {
-                final Member updatedMember = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
-                final Order order = orderDao.findById(orderId).orElseThrow(OrderNotFoundException::new);
+                final Member updatedMember = memberRepository.findOne(1L);
+                final Order order = orderRepository.findOne(orderId);
 
                 int remainPoint = member.getPointValue() - usedPoint;
                 final int cartItemPrice1 = product1.getPriceValue() * quantity1.getQuantity();
@@ -141,13 +148,13 @@ public class OrderServiceTest {
             void setUp() {
                 final OrderRequest orderRequest = new OrderRequest(List.of(1L, 2L), 1000);
                 final Long orderId = orderService.order(member, orderRequest);
-                order = orderDao.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
+                order = orderRepository.findOne(orderId);
             }
 
             @DisplayName("주문 내역을 볼 수 있다.")
             @Test
             void it_returns_orderProducts() {
-                final List<OrderProduct> orderProducts = orderProductDao.findAllByMemberId(member.getId());
+                final List<OrderProduct> orderProducts = orderProductRepository.findAllByMemberId(member.getId());
 
                 assertAll(
                         () -> assertThat(orderProducts).hasSize(2),
@@ -172,7 +179,7 @@ public class OrderServiceTest {
             @Test
             void cart_items_are_deleted() {
                 // given
-                final List<CartItem> cartItems = cartItemDao.findAllByMemberId(member.getId());
+                final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
 
                 // when, then
                 assertThat(cartItems).doesNotContain(
@@ -194,7 +201,7 @@ public class OrderServiceTest {
                 final Long orderId = orderService.order(member, orderRequest);
 
                 // when
-                final Order order = orderDao.findById(orderId).orElseThrow(OrderNotFoundException::new);
+                final Order order = orderRepository.findOne(orderId);
 
                 // then
                 assertAll(

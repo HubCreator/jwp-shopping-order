@@ -1,10 +1,9 @@
 package cart.integration;
 
-import cart.dao.MemberDao;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
-import cart.exception.notfound.MemberNotFoundException;
+import cart.repository.MemberRepository;
 import cart.ui.dto.cartitem.CartItemIdsRequest;
 import cart.ui.dto.cartitem.CartItemQuantityUpdateRequest;
 import cart.ui.dto.cartitem.CartItemRequest;
@@ -31,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 public class CartItemIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     private Long productId;
     private Long productId2;
@@ -45,8 +44,8 @@ public class CartItemIntegrationTest extends IntegrationTest {
         productId = createProduct(new ProductRequest("치킨", 10_000, "http://example.com/chicken.jpg"));
         productId2 = createProduct(new ProductRequest("피자", 15_000, "http://example.com/pizza.jpg"));
 
-        member = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
-        member2 = memberDao.findById(2L).orElseThrow(MemberNotFoundException::new);
+        member = memberRepository.findOne(1L);
+        member2 = memberRepository.findOne(2L);
     }
 
     private ExtractableResponse<Response> requestAddCartItem(Member member, CartItemRequest cartItemRequest) {

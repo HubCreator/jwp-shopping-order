@@ -1,8 +1,7 @@
 package cart.integration;
 
-import cart.dao.MemberDao;
 import cart.domain.member.Member;
-import cart.exception.notfound.MemberNotFoundException;
+import cart.repository.MemberRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 public class MemberIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private MemberDao memberDao;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -26,7 +25,7 @@ public class MemberIntegrationTest extends IntegrationTest {
     @Test
     void getPoint() {
         // given
-        final Member member = memberDao.findById(1L).orElseThrow(MemberNotFoundException::new);
+        final Member member = memberRepository.findOne(1L);
 
         // when, then
         RestAssured

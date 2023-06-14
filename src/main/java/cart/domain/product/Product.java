@@ -12,8 +12,6 @@ import java.util.Objects;
 @Getter
 public class Product {
 
-    private static final long NOT_YET_PERSIST_ID = -1;
-
     @Id
     @GeneratedValue
     private Long id;
@@ -27,8 +25,11 @@ public class Product {
     protected Product() {
     }
 
-    public Product(final ProductName productName, final ProductPrice productPrice, final ProductImageUrl productImageUrl) {
-        this(NOT_YET_PERSIST_ID, productName, productPrice, productImageUrl);
+    public Product(final ProductName productName, final ProductPrice productPrice,
+                   final ProductImageUrl productImageUrl) {
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productImageUrl = productImageUrl;
     }
 
     public Product(final long id, final ProductName productName,
