@@ -2,17 +2,31 @@ package cart.domain.member;
 
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.PointAbusedException;
+import lombok.Getter;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Objects;
 
+@Entity
+@Getter
 public class Member {
 
     private static final long NOT_YET_PERSIST_ID = -1;
 
-    private final Long id;
-    private final MemberEmail email;
-    private final MemberPassword password;
-    private final MemberPoint point;
+    @Id @GeneratedValue
+    private Long id;
+    @Embedded
+    private MemberEmail email;
+    @Embedded
+    private MemberPassword password;
+    @Embedded
+    private MemberPoint point;
+
+    protected Member() {
+    }
 
     public Member(final MemberEmail email, final MemberPassword password) {
         this(NOT_YET_PERSIST_ID, email, password);
@@ -43,14 +57,6 @@ public class Member {
         return new Member(id, email, password, resultPoint);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public MemberEmail getEmail() {
-        return email;
-    }
-
     public String getEmailValue() {
         return email.getEmail();
     }
@@ -59,9 +65,6 @@ public class Member {
         return password.getPassword();
     }
 
-    public MemberPoint getPoint() {
-        return point;
-    }
 
     public Integer getPointValue() {
         return point.getPoint();

@@ -1,12 +1,20 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidSavedPointException;
+import lombok.Getter;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class SavedPoint {
 
     private final int savedPoint;
+
+    protected SavedPoint() {
+        this.savedPoint = -1;
+    }
 
     public SavedPoint(final int savedPoint) {
         validate(savedPoint);
@@ -17,10 +25,6 @@ public class SavedPoint {
         if (savedPoint < 0) {
             throw new InvalidSavedPointException(savedPoint);
         }
-    }
-
-    public int getSavedPoint() {
-        return savedPoint;
     }
 
     @Override

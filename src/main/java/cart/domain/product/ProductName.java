@@ -1,18 +1,22 @@
 package cart.domain.product;
 
+import lombok.Getter;
+
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class ProductName {
 
     private final String name;
 
-    public ProductName(final String name) {
-
-        this.name = name;
+    protected ProductName() {
+        this.name = null;
     }
 
-    public String getName() {
-        return name;
+    public ProductName(final String name) {
+        this.name = name;
     }
 
     @Override

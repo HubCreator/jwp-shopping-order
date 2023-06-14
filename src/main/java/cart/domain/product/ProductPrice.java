@@ -1,17 +1,22 @@
 package cart.domain.product;
 
+import lombok.Getter;
+
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class ProductPrice {
 
     private final int price;
 
-    public ProductPrice(final int price) {
-        this.price = price;
+    protected ProductPrice() {
+        this.price = -1;
     }
 
-    public int getPrice() {
-        return price;
+    public ProductPrice(final int price) {
+        this.price = price;
     }
 
     @Override

@@ -1,17 +1,22 @@
 package cart.domain.product;
 
+import lombok.Getter;
+
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class ProductImageUrl {
 
     private final String imageUrl;
 
-    public ProductImageUrl(final String imageUrl) {
-        this.imageUrl = imageUrl;
+    protected ProductImageUrl() {
+        this.imageUrl = null;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public ProductImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Override

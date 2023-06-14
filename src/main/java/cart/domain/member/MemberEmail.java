@@ -2,11 +2,17 @@ package cart.domain.member;
 
 import cart.exception.business.member.InvalidMemberEmailException;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
 public class MemberEmail {
 
     private final String email;
+
+    protected MemberEmail() {
+        this.email = null;
+    }
 
     public MemberEmail(final String email) {
         validate(email);

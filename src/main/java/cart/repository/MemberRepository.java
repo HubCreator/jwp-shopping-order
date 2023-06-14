@@ -14,7 +14,6 @@ public class MemberRepository {
         this.memberDao = memberDao;
     }
 
-
     public Member findByEmail(final String email) {
         return memberDao.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException(email));

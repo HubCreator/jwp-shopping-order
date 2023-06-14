@@ -1,12 +1,20 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidDeliveryFeeException;
+import lombok.Getter;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class DeliveryFee {
 
     private final int deliveryFee;
+
+    protected DeliveryFee() {
+        this.deliveryFee = -1;
+    }
 
     public DeliveryFee(final int deliveryFee) {
         validate(deliveryFee);
@@ -17,10 +25,6 @@ public class DeliveryFee {
         if (deliveryFee < 0) {
             throw new InvalidDeliveryFeeException(deliveryFee);
         }
-    }
-
-    public int getDeliveryFee() {
-        return deliveryFee;
     }
 
     @Override

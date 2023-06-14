@@ -1,14 +1,22 @@
 package cart.domain.cartitem;
 
 import cart.exception.business.cartitem.InvalidCartItemQuantityException;
+import lombok.Getter;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class Quantity {
 
     private static final int INITIAL_VALUE = 1;
 
     private final int quantity;
+
+    protected Quantity() {
+        this.quantity = -1;
+    }
 
     public Quantity(final int quantity) {
         validate(quantity);
@@ -27,10 +35,6 @@ public class Quantity {
 
     public Quantity add() {
         return new Quantity(quantity + 1);
-    }
-
-    public int getQuantity() {
-        return quantity;
     }
 
     @Override

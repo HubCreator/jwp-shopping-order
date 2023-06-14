@@ -1,17 +1,22 @@
 package cart.domain.member;
 
+import lombok.Getter;
+
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class MemberPassword {
 
     private final String password;
 
-    public MemberPassword(final String password) {
-        this.password = password;
+    protected MemberPassword() {
+        this.password = null;
     }
 
-    public String getPassword() {
-        return password;
+    public MemberPassword(final String password) {
+        this.password = password;
     }
 
     @Override

@@ -2,14 +2,22 @@ package cart.domain.member;
 
 import cart.domain.product.ProductPrice;
 import cart.exception.business.member.InvalidMemberPointException;
+import lombok.Getter;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class MemberPoint {
 
     private static final double APPLICATION_RATE = 0.1;
 
     private final int point;
+
+    protected MemberPoint() {
+        this.point = -1;
+    }
 
     public MemberPoint(final Integer point) {
         validate(point);
@@ -32,10 +40,6 @@ public class MemberPoint {
 
     public MemberPoint addPointByTotalPrice(final ProductPrice totalPrice) {
         return new MemberPoint(point + (int) (totalPrice.getPrice() * APPLICATION_RATE));
-    }
-
-    public int getPoint() {
-        return point;
     }
 
     @Override

@@ -4,20 +4,44 @@ import cart.domain.cartitem.Quantity;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
+import lombok.Getter;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Objects;
 
+@Entity
+@Getter
 public class OrderProduct {
 
     private static final long NOT_YET_PERSIST_ID = -1;
 
-    private final Long id;
-    private final Order order;
-    private final Long productId;
-    private final ProductName productName;
-    private final ProductPrice productPrice;
-    private final ProductImageUrl productImageUrl;
-    private final Quantity quantity;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    private Long productId;
+
+    @Embedded
+    private ProductName productName;
+    @Embedded
+    private ProductPrice productPrice;
+    @Embedded
+    private ProductImageUrl productImageUrl;
+    @Embedded
+    private Quantity quantity;
+
+    protected OrderProduct() {
+    }
 
     public OrderProduct(final Order order, final long productId, final ProductName productName,
                         final ProductPrice productPrice, final ProductImageUrl productImageUrl, final Quantity quantity) {
@@ -35,50 +59,21 @@ public class OrderProduct {
         this.quantity = quantity;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
 
     public Long getOrderId() {
         return order.getId();
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public ProductName getProductName() {
-        return productName;
     }
 
     public String getProductNameValue() {
         return productName.getName();
     }
 
-    public ProductPrice getProductPrice() {
-        return productPrice;
-    }
-
     public int getProductPriceValue() {
         return productPrice.getPrice();
     }
 
-
-    public ProductImageUrl getProductImageUrl() {
-        return productImageUrl;
-    }
-
     public String getProductImageUrlValue() {
         return productImageUrl.getImageUrl();
-    }
-
-
-    public Quantity getQuantity() {
-        return quantity;
     }
 
     public int getQuantityValue() {

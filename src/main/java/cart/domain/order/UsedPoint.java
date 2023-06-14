@@ -1,12 +1,20 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidUsedPointException;
+import lombok.Getter;
 
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
+@Getter
 public class UsedPoint {
 
     private final int usedPoint;
+
+    protected UsedPoint() {
+        this.usedPoint = -1;
+    }
 
     public UsedPoint(final int usedPoint) {
         validate(usedPoint);
@@ -17,10 +25,6 @@ public class UsedPoint {
         if (usedPoint < 0) {
             throw new InvalidUsedPointException(usedPoint);
         }
-    }
-
-    public int getUsedPoint() {
-        return usedPoint;
     }
 
     @Override

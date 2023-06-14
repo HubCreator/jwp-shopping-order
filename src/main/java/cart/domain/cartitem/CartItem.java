@@ -3,17 +3,41 @@ package cart.domain.cartitem;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
 import cart.exception.authorization.CartItemAccessForbiddenException;
+import lombok.Getter;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.util.Objects;
 
+@Entity
+@Getter
 public class CartItem {
 
     private static final long NOT_YET_PERSIST_ID = -1;
 
-    private final Long id;
-    private final Quantity quantity;
-    private final Product product;
-    private final Member member;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Embedded
+    private Quantity quantity;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    protected CartItem() {
+    }
 
     public CartItem(final Member member, final Product product) {
         this(-1, member, product, Quantity.create());
