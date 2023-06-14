@@ -35,11 +35,13 @@ public class CartItemService {
 
     @Transactional
     public Long addCartItem(final Member member, final CartItemRequest request) {
-        final Product product = productRepository.findById(request.getProductId());
+        final Product product = productRepository.findOne(request.getProductId());
         final CartItems cartItems = new CartItems(cartItemRepository.findAllByMemberId(member.getId()));
         final Optional<CartItem> cartItemOptional = cartItems.findProduct(product);
         if (cartItemOptional.isEmpty()) {
-            return cartItemRepository.save(new CartItem(member, product));
+            final CartItem cartItem = new CartItem(member, product);
+            cartItemRepository.save(cartItem);
+            return cartItem.getId();
         }
         final CartItem cartItem = cartItemOptional.get();
         cartItem.checkOwner(member);

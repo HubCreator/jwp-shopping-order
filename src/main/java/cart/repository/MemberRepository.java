@@ -1,29 +1,37 @@
 package cart.repository;
 
-import cart.dao.MemberDao;
 import cart.domain.member.Member;
 import cart.exception.notfound.MemberNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import java.util.List;
+
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
 
-    private final MemberDao memberDao;
+    private final EntityManager em;
 
-    public MemberRepository(final MemberDao memberDao) {
-        this.memberDao = memberDao;
+    public void save(final Member member) {
+        em.persist(member);
     }
 
     public Member findByEmail(final String email) {
-        return memberDao.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException(email));
+        try {
+            return em.createQuery("select m from Member m where m.email = :email", Member.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (final NoResultException | NonUniqueResultException e) {
+            throw new MemberNotFoundException(email);
+        }
     }
 
-    public Long save(final Member member) {
-        if (member.getId() == null || memberDao.findById(member.getId()).isEmpty()) {
-            return memberDao.insert(member);
-        }
-        memberDao.update(member);
-        return member.getId();
+    public List<Member> findAll() {
+        return em.createQuery("select m from Member m", Member.class)
+                .getResultList();
     }
 }

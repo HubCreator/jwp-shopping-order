@@ -27,11 +27,12 @@ public class ProductService {
                 new ProductName(request.getName()),
                 new ProductPrice(request.getPrice()),
                 new ProductImageUrl(request.getImageUrl()));
-        return productRepository.save(product);
+        productRepository.save(product);
+        return product.getId();
     }
 
     public Product getProductById(final Long productId) {
-        return productRepository.findById(productId);
+        return productRepository.findOne(productId);
     }
 
     public List<Product> getAllProducts() {
@@ -45,11 +46,11 @@ public class ProductService {
                 new ProductName(request.getName()),
                 new ProductPrice(request.getPrice()),
                 new ProductImageUrl(request.getImageUrl()));
-        productRepository.update(product);
+        productRepository.updateProduct(product);
     }
 
     @Transactional
     public void deleteProduct(final Long productId) {
-        productRepository.deleteById(productId);
+        productRepository.delete(productId);
     }
 }

@@ -1,6 +1,7 @@
 package cart.domain.order;
 
 import cart.domain.cartitem.Quantity;
+import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.util.Objects;
 
 @Entity
@@ -29,7 +31,9 @@ public class OrderProduct {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private Long productId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Embedded
     private ProductName productName;
@@ -43,16 +47,16 @@ public class OrderProduct {
     protected OrderProduct() {
     }
 
-    public OrderProduct(final Order order, final long productId, final ProductName productName,
+    public OrderProduct(final Order order, final Product product, final ProductName productName,
                         final ProductPrice productPrice, final ProductImageUrl productImageUrl, final Quantity quantity) {
-        this(NOT_YET_PERSIST_ID, order, productId, productName, productPrice, productImageUrl, quantity);
+        this(NOT_YET_PERSIST_ID, order, product, productName, productPrice, productImageUrl, quantity);
     }
 
-    public OrderProduct(final long id, final Order order, final long productId, final ProductName productName,
+    public OrderProduct(final long id, final Order order, final Product product, final ProductName productName,
                         final ProductPrice productPrice, final ProductImageUrl productImageUrl, final Quantity quantity) {
         this.id = id;
         this.order = order;
-        this.productId = productId;
+        this.product = product;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productImageUrl = productImageUrl;
@@ -62,6 +66,10 @@ public class OrderProduct {
 
     public Long getOrderId() {
         return order.getId();
+    }
+
+    public Long getProductId() {
+        return product.getId();
     }
 
     public String getProductNameValue() {

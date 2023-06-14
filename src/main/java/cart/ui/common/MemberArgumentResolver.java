@@ -1,11 +1,10 @@
 package cart.ui.common;
 
-import cart.dao.MemberDao;
 import cart.domain.member.Member;
 import cart.domain.member.MemberPassword;
 import cart.exception.authentication.InvalidFormatException;
 import cart.exception.authentication.PasswordNotMatchException;
-import cart.exception.notfound.MemberNotFoundException;
+import cart.repository.MemberRepository;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -15,10 +14,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberDao memberDao;
 
-    public MemberArgumentResolver(MemberDao memberDao) {
-        this.memberDao = memberDao;
+    private final MemberRepository memberRepository;
+
+    public MemberArgumentResolver(final MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -51,8 +51,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         String password = credentials[1];
 
         // 본인 여부 확인
-        Member member = memberDao.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException(email));
+        Member member = memberRepository.findByEmail(email);
         if (!member.checkPassword(new MemberPassword(password))) {
             throw new PasswordNotMatchException();
         }

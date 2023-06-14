@@ -16,7 +16,8 @@ public class Member {
 
     private static final long NOT_YET_PERSIST_ID = -1;
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     @Embedded
     private MemberEmail email;

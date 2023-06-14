@@ -68,20 +68,15 @@ public class CartItem {
         return new CartItem(id, member, product, quantity.add());
     }
 
-    public Long getId() {
-        return id;
+    public void update(final CartItem cartItem) {
+        this.id = cartItem.id;
+        this.member = cartItem.member;
+        this.product = cartItem.product;
+        this.quantity = cartItem.quantity;
     }
 
     public Long getMemberId() {
         return member.getId();
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public Product getProduct() {
-        return product;
     }
 
     public Long getProductId() {
@@ -90,10 +85,6 @@ public class CartItem {
 
     public int getProductPrice() {
         return product.getPriceValue();
-    }
-
-    public Quantity getQuantity() {
-        return quantity;
     }
 
     public int getQuantityValue() {

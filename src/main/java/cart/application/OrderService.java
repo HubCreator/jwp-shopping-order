@@ -57,7 +57,7 @@ public class OrderService {
     }
 
     public OrderDetailResponse getOrderDetail(final Member member, final Long orderId) {
-        final Order order = orderRepository.findById(orderId);
+        final Order order = orderRepository.findOne(orderId);
         order.checkOwner(member);
         final List<OrderProduct> orderProducts = orderRepository.findAllByOrderId(orderId);
         return getOrderDetailResponse(order, orderProducts);

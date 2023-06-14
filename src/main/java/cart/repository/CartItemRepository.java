@@ -1,65 +1,60 @@
 package cart.repository;
 
-import cart.dao.CartItemDao;
 import cart.domain.cartitem.CartItem;
-import cart.exception.business.cartitem.InvalidCartItemsException;
-import cart.exception.notfound.CartItemNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
+@RequiredArgsConstructor
 public class CartItemRepository {
 
-    private final CartItemDao cartItemDao;
+    private final EntityManager em;
 
-    public CartItemRepository(final CartItemDao cartItemDao) {
-        this.cartItemDao = cartItemDao;
-    }
-
-    public Long save(final CartItem cartItem) {
-        final Optional<CartItem> cartItemOptional = cartItemDao.findById(cartItem.getId());
-        if (cartItemOptional.isPresent()) {
-            return cartItemOptional.get().getId();
-        }
-        return cartItemDao.insert(cartItem);
+    public void save(final CartItem cartItem) {
+        em.persist(cartItem);
     }
 
     public CartItem findById(final Long id) {
-        return cartItemDao.findById(id)
-                .orElseThrow(() -> new CartItemNotFoundException(id));
+        return em.find(CartItem.class, id);
     }
 
-    public List<CartItem> findAllByMemberId(final Long id) {
-        return cartItemDao.findAllByMemberId(id);
+    public List<CartItem> findAllByMemberId(final Long memberId) {
+        return em.createQuery("select c from CartItem c where c.member = :memberId", CartItem.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
     }
 
     public List<CartItem> findAllByIds(final List<Long> ids) {
-        final List<CartItem> cartItems = cartItemDao.findAllByIds(ids);
-        if (ids.size() != cartItems.size()) {
-            throw new InvalidCartItemsException(ids);
-        }
-        return cartItems;
+        return em.createQuery("select c from CartItem  c where c.id in :ids", CartItem.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 
     public void update(final CartItem cartItem) {
-        cartItemDao.update(cartItem);
+        final CartItem findCartItem = em.find(CartItem.class, cartItem.getId());
+        findCartItem.update(cartItem);
     }
 
     public void delete(final CartItem cartItem) {
-        cartItemDao.delete(cartItem.getId());
+        em.remove(cartItem);
     }
 
     public void deleteAll(final List<CartItem> cartItems) {
         final List<Long> ids = cartItems.stream()
                 .map(CartItem::getId)
                 .collect(Collectors.toList());
-        cartItemDao.deleteByIds(ids);
+        em.createQuery("delete from CartItem c where c.id in :ids")
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     public void deleteByIds(final List<Long> ids) {
-        cartItemDao.deleteByIds(ids);
+        em.createQuery("delete from CartItem c where c.id in :ids")
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 }

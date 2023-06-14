@@ -1,48 +1,44 @@
 package cart.repository;
 
-import cart.dao.CartItemDao;
-import cart.dao.ProductDao;
 import cart.domain.product.Product;
-import cart.exception.notfound.ProductNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class ProductRepository {
 
-    private final ProductDao productDao;
-    private final CartItemDao cartItemDao;
+    private final EntityManager em;
 
-    public ProductRepository(final ProductDao productDao, final CartItemDao cartItemDao) {
-        this.productDao = productDao;
-        this.cartItemDao = cartItemDao;
+    public void save(final Product product) {
+        em.persist(product);
     }
 
-    public Long save(final Product product) {
-        final Optional<Product> productOptional = productDao.findById(product.getId());
-        if (productOptional.isPresent()) {
-            return productOptional.get().getId();
-        }
-        return productDao.insert(product);
-    }
-
-    public Product findById(final Long id) {
-        return productDao.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public Product findOne(final Long productId) {
+        return em.find(Product.class, productId);
     }
 
     public List<Product> findAll() {
-        return productDao.findAll();
+        return em.createQuery("select p from Product p", Product.class)
+                .getResultList();
     }
 
-    public void update(final Product product) {
-        productDao.update(product);
+    public void updateProduct(final Product product) {
+        final Product findProduct = findOne(product.getId());
+        findProduct.update(product);
     }
 
-    public void deleteById(final Long id) {
-        cartItemDao.deleteByProductId(id);
-        productDao.deleteById(id);
+    public void delete(final Long productId) {
+        final Product findProduct = findOne(productId);
+        em.remove(findProduct);
+    }
+
+    public List<Product> findAllByIds(final List<Long> ids) {
+        return em.createQuery("select p from Product p where p.id in :ids", Product.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 }

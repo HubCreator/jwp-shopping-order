@@ -54,7 +54,7 @@ public class CartItems {
         return IntStream.range(0, products.size())
                 .mapToObj(index -> new OrderProduct(
                         order,
-                        products.get(index).getId(),
+                        products.get(index),
                         products.get(index).getProductName(),
                         products.get(index).getProductPrice(),
                         products.get(index).getProductImageUrl(),

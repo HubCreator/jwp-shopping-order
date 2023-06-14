@@ -40,6 +40,13 @@ public class Product {
     }
 
 
+    public void update(final Product product) {
+        this.id = product.id;
+        this.productName = product.productName;
+        this.productPrice = product.productPrice;
+        this.productImageUrl = product.productImageUrl;
+    }
+
     public String getNameValue() {
         return productName.getName();
     }
