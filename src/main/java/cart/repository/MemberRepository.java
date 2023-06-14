@@ -1,6 +1,7 @@
 package cart.repository;
 
 import cart.domain.member.Member;
+import cart.domain.member.MemberEmail;
 import cart.exception.notfound.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -28,7 +29,7 @@ public class MemberRepository {
         return em.find(Member.class, id);
     }
 
-    public Member findByEmail(final String email) {
+    public Member findByEmail(final MemberEmail email) {
         try {
             return em.createQuery("select m from Member m where m.email = :email", Member.class)
                     .setParameter("email", email)

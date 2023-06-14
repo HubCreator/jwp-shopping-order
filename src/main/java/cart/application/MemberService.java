@@ -17,7 +17,7 @@ public class MemberService {
     }
 
     public MemberPoint getPoint(final Member member) {
-        return memberRepository.findByEmail(member.getEmailValue())
+        return memberRepository.findByEmail(member.getEmail())
                 .getPoint();
     }
 }

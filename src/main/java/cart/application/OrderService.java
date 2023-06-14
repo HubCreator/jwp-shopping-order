@@ -38,7 +38,7 @@ public class OrderService {
 
     @Transactional
     public Long order(final Member member, final OrderRequest request) {
-        final Member findMember = memberRepository.findByEmail(member.getEmailValue());
+        final Member findMember = memberRepository.findByEmail(member.getEmail());
         final CartItems cartItems = new CartItems(cartItemRepository.findAllByIds(request.getCartItemIds()));
         cartItems.checkOwner(findMember);
         final int totalPrice = cartItems.getTotalPrice();

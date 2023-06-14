@@ -1,6 +1,7 @@
 package cart.ui.common;
 
 import cart.domain.member.Member;
+import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
 import cart.exception.authentication.InvalidFormatException;
 import cart.exception.authentication.PasswordNotMatchException;
@@ -51,7 +52,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         String password = credentials[1];
 
         // 본인 여부 확인
-        Member member = memberRepository.findByEmail(email);
+        Member member = memberRepository.findByEmail(new MemberEmail(email));
         if (!member.checkPassword(new MemberPassword(password))) {
             throw new PasswordNotMatchException();
         }
