@@ -41,8 +41,7 @@ public class Product {
     }
 
 
-    public void update(final Product product) {
-        this.id = product.id;
+    public void updateTo(final Product product) {
         this.productName = product.productName;
         this.productPrice = product.productPrice;
         this.productImageUrl = product.productImageUrl;

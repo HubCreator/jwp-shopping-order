@@ -30,19 +30,19 @@ public class ProductRepository {
                 .getResultList();
     }
 
+    public List<Product> findAllByIds(final List<Long> ids) {
+        return em.createQuery("select p from Product p where p.id in :ids", Product.class)
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
     public void updateProduct(final Product product) {
         final Product findProduct = findOne(product.getId());
-        findProduct.update(product);
+        findProduct.updateTo(product);
     }
 
     public void delete(final Long productId) {
         final Product findProduct = findOne(productId);
         em.remove(findProduct);
-    }
-
-    public List<Product> findAllByIds(final List<Long> ids) {
-        return em.createQuery("select p from Product p where p.id in :ids", Product.class)
-                .setParameter("ids", ids)
-                .getResultList();
     }
 }
