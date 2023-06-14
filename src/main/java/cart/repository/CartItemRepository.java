@@ -1,6 +1,7 @@
 package cart.repository;
 
 import cart.domain.cartitem.CartItem;
+import cart.domain.cartitem.Quantity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -38,9 +39,9 @@ public class CartItemRepository {
                 .getResultList();
     }
 
-    public void update(final CartItem cartItem) {
+    public void updateQuantity(final CartItem cartItem, final Quantity quantity) {
         final CartItem findCartItem = em.find(CartItem.class, cartItem.getId());
-        findCartItem.update(cartItem);
+        findCartItem.updateQuantity(quantity);
     }
 
     public void delete(final CartItem cartItem) {
@@ -54,11 +55,13 @@ public class CartItemRepository {
         em.createQuery("delete from CartItem c where c.id in :ids")
                 .setParameter("ids", ids)
                 .executeUpdate();
+        em.clear();
     }
 
     public void deleteByIds(final List<Long> ids) {
         em.createQuery("delete from CartItem c where c.id in :ids")
                 .setParameter("ids", ids)
                 .executeUpdate();
+        em.clear();
     }
 }

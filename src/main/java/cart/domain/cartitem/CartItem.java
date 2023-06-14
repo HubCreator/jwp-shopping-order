@@ -60,19 +60,8 @@ public class CartItem {
         }
     }
 
-    public CartItem updateQuantity(final Quantity quantity) {
-        return new CartItem(id, member, product, quantity);
-    }
-
-    public CartItem addQuantity() {
-        return new CartItem(id, member, product, quantity.add());
-    }
-
-    public void update(final CartItem cartItem) {
-        this.id = cartItem.id;
-        this.member = cartItem.member;
-        this.product = cartItem.product;
-        this.quantity = cartItem.quantity;
+    public void updateQuantity(final Quantity quantity) {
+        this.quantity = quantity;
     }
 
     public Long getMemberId() {
@@ -116,5 +105,9 @@ public class CartItem {
                 ", product=" + product +
                 ", member=" + member +
                 '}';
+    }
+
+    public Quantity getAddedQuantity() {
+        return this.quantity.add();
     }
 }
