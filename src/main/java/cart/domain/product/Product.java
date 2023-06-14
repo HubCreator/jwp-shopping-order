@@ -1,6 +1,8 @@
 package cart.domain.product;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
     @Id
@@ -21,9 +24,6 @@ public class Product {
     private ProductPrice productPrice;
     @Embedded
     private ProductImageUrl productImageUrl;
-
-    protected Product() {
-    }
 
     public Product(final ProductName productName, final ProductPrice productPrice,
                    final ProductImageUrl productImageUrl) {

@@ -3,7 +3,9 @@ package cart.domain.cartitem;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
 import cart.exception.authorization.CartItemAccessForbiddenException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -17,6 +19,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartItem {
 
     @Id
@@ -33,9 +36,6 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    protected CartItem() {
-    }
 
     public CartItem(final Member member, final Product product) {
         this(member, product, Quantity.create());

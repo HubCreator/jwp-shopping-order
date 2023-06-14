@@ -2,7 +2,9 @@ package cart.domain.member;
 
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.PointAbusedException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -12,6 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -23,9 +26,6 @@ public class Member {
     private MemberPassword password;
     @Embedded
     private MemberPoint point;
-
-    protected Member() {
-    }
 
     public Member(final MemberEmail email, final MemberPassword password) {
         this(email, password, null);

@@ -2,7 +2,9 @@ package cart.domain.order;
 
 import cart.domain.member.Member;
 import cart.exception.authorization.OrderAccessForbiddenException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "orders")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id
@@ -35,9 +38,6 @@ public class Order {
     @Embedded
     private DeliveryFee deliveryFee;
     private LocalDateTime orderedAt;
-
-    protected Order() {
-    }
 
     public Order(final Member member, final UsedPoint usedPoint,
                  final SavedPoint savedPoint, final DeliveryFee deliveryFee) {
