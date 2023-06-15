@@ -10,10 +10,12 @@ import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
+import cart.repository.OrderProductRepository;
 import cart.repository.OrderRepository;
 import cart.ui.dto.order.OrderDetailResponse;
 import cart.ui.dto.order.OrderProductDto;
 import cart.ui.dto.order.OrderRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,18 +25,14 @@ import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
     private final CartItemRepository cartItemRepository;
 
-    public OrderService(final OrderRepository orderRepository,
-                        final MemberRepository memberRepository, final CartItemRepository cartItemRepository) {
-        this.orderRepository = orderRepository;
-        this.memberRepository = memberRepository;
-        this.cartItemRepository = cartItemRepository;
-    }
 
     @Transactional
     public Long order(final Member member, final OrderRequest request) {
@@ -60,7 +58,7 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(final Member member, final Long orderId) {
         final Order order = orderRepository.findOne(orderId);
         order.checkOwner(member);
-        final List<OrderProduct> orderProducts = orderRepository.findAllByOrderId(orderId);
+        final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderId(orderId);
         return getOrderDetailResponse(order, orderProducts);
     }
 
@@ -69,7 +67,7 @@ public class OrderService {
         orders.forEach(order -> order.checkOwner(member));
         final List<OrderDetailResponse> result = new ArrayList<>();
         for (Order order : orders) {
-            final List<OrderProduct> orderProducts = orderRepository.findAllByOrderId(order.getId());
+            final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderId(order.getId());
             result.add(getOrderDetailResponse(order, orderProducts));
         }
         return result;

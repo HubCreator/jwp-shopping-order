@@ -20,8 +20,14 @@ public class OrderProductRepository {
     }
 
     public List<OrderProduct> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select op from OrderProduct op where op.order.member = :memberId", OrderProduct.class)
+        return em.createQuery("select op from OrderProduct op join op.order o where o.member = :memberId", OrderProduct.class)
                 .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
+    public List<OrderProduct> findAllByOrderId(final Long orderId) {
+        return em.createQuery("select op from OrderProduct op join op.order o where o.id = :orderId", OrderProduct.class)
+                .setParameter("orderId", orderId)
                 .getResultList();
     }
 

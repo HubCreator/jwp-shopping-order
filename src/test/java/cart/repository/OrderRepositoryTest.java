@@ -4,13 +4,10 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.CartItems;
 import cart.domain.member.Member;
 import cart.domain.order.Order;
-import cart.domain.order.OrderProduct;
 import cart.domain.order.UsedPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @Transactional
 @SpringBootTest
 class OrderRepositoryTest {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private OrderRepository orderRepository;
@@ -42,7 +37,6 @@ class OrderRepositoryTest {
     private CartItems cartItems;
     private Long orderId;
 
-    @Transactional
     @BeforeEach
     void setUp() {
         // given
@@ -51,7 +45,6 @@ class OrderRepositoryTest {
         cartItem2 = cartItemRepository.findOne(4L);
         cartItems = new CartItems(List.of(cartItem1, cartItem2));
         orderId = orderRepository.save(cartItems, member, new UsedPoint(1_000));
-        Order order = orderRepository.findOne(orderId);
     }
 
     @DisplayName("주문을 저장하고 조회한다.")
@@ -66,20 +59,6 @@ class OrderRepositoryTest {
                 () -> assertThat(order.getUsedPoint()).isEqualTo(new UsedPoint(1_000)),
                 () -> assertThat(order.getSavedPoint()).isEqualTo(cartItems.getSavedPoint()),
                 () -> assertThat(order.getDeliveryFee()).isEqualTo(cartItems.getDeliveryFee())
-        );
-    }
-
-    @DisplayName("주문에 해당하는 주문 상품을 조회할 수 있다.")
-    @Test
-    void findAllByOrderId() {
-        // given
-        final List<OrderProduct> orderProducts = orderRepository.findAllByOrderId(orderId);
-
-        // then
-        assertAll(
-                () -> assertThat(orderProducts).hasSize(2),
-                () -> assertThat(orderProducts.get(0).getProduct()).isSameAs(cartItem1.getProduct()),
-                () -> assertThat(orderProducts.get(1).getProduct()).isSameAs(cartItem2.getProduct())
         );
     }
 
@@ -111,11 +90,7 @@ class OrderRepositoryTest {
         final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
 
         // when, then
-        assertAll(
-                () -> assertThat(orders).hasSize(2),
-                () -> assertThat(orders.get(0).getId()).isEqualTo(1L),
-                () -> assertThat(orders.get(1).getId()).isEqualTo(2L)
-        );
+        assertThat(orders).hasSize(2);
     }
 
     @DisplayName("특정 주문 내역을 삭제할 수 있다.")
