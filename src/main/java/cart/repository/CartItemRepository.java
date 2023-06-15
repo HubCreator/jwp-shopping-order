@@ -16,11 +16,12 @@ public class CartItemRepository {
     private final EntityManager em;
 
     public void save(final CartItem cartItem) {
-        if (cartItem.getId() == null) {
+        em.persist(cartItem);
+        /*if (cartItem.getId() == null) {
             em.persist(cartItem);
             return;
         }
-        em.merge(cartItem);
+        em.merge(cartItem);*/
     }
 
     public CartItem findOne(final Long id) {
@@ -34,7 +35,7 @@ public class CartItemRepository {
     }
 
     public List<CartItem> findAllByIds(final List<Long> ids) {
-        return em.createQuery("select c from CartItem  c where c.id in :ids", CartItem.class)
+        return em.createQuery("select c from CartItem c where c.id in :ids", CartItem.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }

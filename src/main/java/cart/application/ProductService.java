@@ -6,6 +6,7 @@ import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.repository.ProductRepository;
 import cart.ui.dto.product.ProductRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +14,10 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-
-    public ProductService(final ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Transactional
     public Long createProduct(final ProductRequest request) {

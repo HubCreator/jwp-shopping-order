@@ -18,11 +18,12 @@ public class MemberRepository {
     private final EntityManager em;
 
     public void save(final Member member) {
-        if (member.getId() == null) {
+        em.persist(member);
+        /*if (member.getId() == null) {
             em.persist(member);
             return;
         }
-        em.merge(member);
+        em.merge(member);*/
     }
 
     public Member findOne(final Long id) {

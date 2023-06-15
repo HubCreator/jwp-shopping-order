@@ -14,6 +14,7 @@ public class OrderProductRepository {
     private final EntityManager em;
 
     public void saveAll(final List<OrderProduct> orderProducts) {
+        // TODO : 최적화할 수 있지 않을까
         for (OrderProduct orderProduct : orderProducts) {
             em.persist(orderProduct);
         }

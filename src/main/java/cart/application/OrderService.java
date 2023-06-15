@@ -33,7 +33,6 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final CartItemRepository cartItemRepository;
 
-
     @Transactional
     public Long order(final Member member, final OrderRequest request) {
         final Member findMember = memberRepository.findByEmail(member.getEmail());

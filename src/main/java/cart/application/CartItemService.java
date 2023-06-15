@@ -11,6 +11,7 @@ import cart.ui.dto.cartitem.CartItemIdsRequest;
 import cart.ui.dto.cartitem.CartItemQuantityUpdateRequest;
 import cart.ui.dto.cartitem.CartItemRequest;
 import cart.ui.dto.cartitem.CartItemsPriceResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +20,11 @@ import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
+@RequiredArgsConstructor
 public class CartItemService {
 
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
-
-    public CartItemService(final ProductRepository productRepository, final CartItemRepository cartItemRepository) {
-        this.productRepository = productRepository;
-        this.cartItemRepository = cartItemRepository;
-    }
 
     public List<CartItem> getCartItemsByMember(final Member member) {
         return cartItemRepository.findAllByMemberId(member.getId());
