@@ -7,16 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +27,7 @@ public class Order extends BaseTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "order")
-    private final List<OrderProduct> orderProducts = new ArrayList<>();
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Embedded
     private UsedPoint usedPoint;
@@ -57,6 +48,10 @@ public class Order extends BaseTimeEntity {
         if (!Objects.equals(this.member, member)) {
             throw new OrderAccessForbiddenException(member.getEmail());
         }
+    }
+
+    public void updateOrderProduct(final List<OrderProduct> orderProducts) {
+        this.orderProducts = orderProducts;
     }
 
     @Override
@@ -81,6 +76,7 @@ public class Order extends BaseTimeEntity {
         return "Order{" +
                 "id=" + id +
                 ", member=" + member +
+                ", orderProducts=" + orderProducts +
                 ", usedPoint=" + usedPoint +
                 ", savedPoint=" + savedPoint +
                 ", deliveryFee=" + deliveryFee +

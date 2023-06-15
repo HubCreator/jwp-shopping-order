@@ -1,17 +1,20 @@
 package cart.config;
 
 import cart.domain.cartitem.CartItem;
+import cart.domain.cartitem.CartItems;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
 import cart.domain.member.MemberPoint;
+import cart.domain.order.UsedPoint;
 import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
+import cart.repository.OrderRepository;
 import cart.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -19,8 +22,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
-@Profile({"dev","test"})
+@Profile({"dev", "test"})
 @RequiredArgsConstructor
 public class InitData implements CommandLineRunner {
 
@@ -38,6 +43,7 @@ public class InitData implements CommandLineRunner {
         private final ProductRepository productRepository;
         private final MemberRepository memberRepository;
         private final CartItemRepository cartItemRepository;
+        private final OrderRepository orderRepository;
 
         @Transactional
         public void init() {
@@ -72,6 +78,9 @@ public class InitData implements CommandLineRunner {
 
             final CartItem cartItem7 = new CartItem(member2, product2, new Quantity(5));
             cartItemRepository.save(cartItem7);
+
+            CartItems cartItems1 = new CartItems(List.of(cartItem1, cartItem2));
+            Long orderId = orderRepository.save(cartItems1, member1, new UsedPoint(0));
         }
     }
 }

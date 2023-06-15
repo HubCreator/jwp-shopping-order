@@ -24,4 +24,11 @@ public class OrderProductRepository {
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
+
+    public void deleteByOrderId(final List<Long> orderIds) {
+        em.createQuery("delete OrderProduct op where op.order.id in :ids")
+                .setParameter("ids", orderIds)
+                .executeUpdate();
+        em.clear();
+    }
 }

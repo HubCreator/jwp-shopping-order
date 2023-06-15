@@ -23,10 +23,11 @@ public class OrderRepository {
 
     public Long save(final CartItems cartItems, final Member member, final UsedPoint usedPoint) {
         final Order order = new Order(member, usedPoint, cartItems.getSavedPoint(), cartItems.getDeliveryFee());
-        em.persist(order);
         final List<Product> products = productRepository.findAllByIds(cartItems.getProductIds());
         final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
         orderProductRepository.saveAll(orderProducts);
+        order.updateOrderProduct(orderProducts);
+        em.persist(order);
         return order.getId();
     }
 
@@ -41,22 +42,28 @@ public class OrderRepository {
     }
 
     public List<Order> findAllByOrderIds(final List<Long> ids) {
-//        em.createQuery("select distinct o from Order o join fetch o.orderProducts where o.id in :ids", Order.class)
-        return em.createQuery("select o from OrderProduct op join fetch op.order o where o.id in :ids", Order.class)
+        return em.createQuery("select distinct o from Order o join fetch o.orderProducts where o.id in :ids", Order.class)
+//        return em.createQuery("select o from OrderProduct op join fetch op.order o where o.id in :ids", Order.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }
 
     public List<Order> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select o from Order o where o.member = :memberId", Order.class)
+        return em.createQuery("select o from Order o join o.member m where m.id = :memberId", Order.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
     public void deleteAll(final List<Order> orders) {
-        final List<Order> findOrders = orders.stream()
-                .map(m -> findOne(m.getId()))
+        final List<Long> ids = orders.stream()
+                .map(Order::getId)
                 .collect(Collectors.toList());
-        findOrders.forEach(order -> em.remove(order));
+        orderProductRepository.deleteByOrderId(ids);
+
+        em.createQuery("delete Order o where o.id in :ids")
+                .setParameter("ids", ids)
+                .executeUpdate();
+
+        em.clear();
     }
 }
