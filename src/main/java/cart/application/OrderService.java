@@ -41,17 +41,18 @@ public class OrderService {
         final Member findMember = memberRepository.findByEmail(member.getEmail());
         final CartItems cartItems = new CartItems(cartItemRepository.findAllByIds(request.getCartItemIds()));
         cartItems.checkOwner(findMember);
-        final int totalPrice = cartItems.getTotalPrice();
+        final ProductPrice totalPrice = cartItems.getTotalPrice();
         validateInvalidPointUse(request, cartItems, totalPrice);
-        final Member updatedMember = findMember.updatePoint(new MemberPoint(request.getPoint()), new ProductPrice(totalPrice));
+        final Member updatedMember = findMember.updatePoint(new MemberPoint(request.getPoint()), totalPrice);
         memberRepository.save(updatedMember);
         final Long orderId = orderRepository.save(cartItems, updatedMember, new UsedPoint(request.getPoint()));
         cartItemRepository.deleteByIds(cartItems.getCartItemIds());
         return orderId;
     }
 
-    private void validateInvalidPointUse(final OrderRequest request, final CartItems cartItems, final int totalPrice) {
-        if (totalPrice + cartItems.getDeliveryFee() < request.getPoint()) {
+    private void validateInvalidPointUse(final OrderRequest request, final CartItems cartItems, final ProductPrice totalPrice) {
+        // TODO 너무 객체지향적이지 않음
+        if (totalPrice.getPrice() + cartItems.getDeliveryFee().getDeliveryFee() < request.getPoint()) {
             throw new InvalidPointUseException(totalPrice, request.getPoint());
         }
     }
@@ -96,7 +97,7 @@ public class OrderService {
                         .sum(),
                 order.getUsedPointValue(),
                 order.getDeliveryFeeValue(),
-                order.getOrderedAt(),
+                order.getCreatedDate(),
                 orderProducts.stream()
                         .map(orderProduct -> new OrderProductDto(
                                 orderProduct.getProductId(),

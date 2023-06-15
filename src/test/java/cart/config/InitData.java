@@ -13,18 +13,19 @@ import cart.domain.product.ProductPrice;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
 import cart.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Profile({"dev","test"})
-@RequiredArgsConstructor
+@Profile("test")
+@AllArgsConstructor
 public class InitData implements CommandLineRunner {
 
-    private final InitService initService;
+    private InitService initService;
 
     @Override
     public void run(final String... args) {
@@ -32,12 +33,14 @@ public class InitData implements CommandLineRunner {
     }
 
     @Component
-    @RequiredArgsConstructor
     static class InitService {
 
-        private final ProductRepository productRepository;
-        private final MemberRepository memberRepository;
-        private final CartItemRepository cartItemRepository;
+        @Autowired
+        private ProductRepository productRepository;
+        @Autowired
+        private MemberRepository memberRepository;
+        @Autowired
+        private CartItemRepository cartItemRepository;
 
         @Transactional
         public void init() {

@@ -19,6 +19,14 @@ public class ProductPrice {
         this.price = price;
     }
 
+    public boolean isOverOrEqualThan(final ProductPrice productPrice) {
+        return this.price <= productPrice.price;
+    }
+
+    public ProductPrice applySale(final double saleRate) {
+        return new ProductPrice((int) (price * saleRate));
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

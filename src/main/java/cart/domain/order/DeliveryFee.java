@@ -21,6 +21,10 @@ public class DeliveryFee {
         this.deliveryFee = deliveryFee;
     }
 
+    public static DeliveryFee none() {
+        return new DeliveryFee(0);
+    }
+
     private void validate(final int deliveryFee) {
         if (deliveryFee < 0) {
             throw new InvalidDeliveryFeeException(deliveryFee);

@@ -1,5 +1,6 @@
 package cart.domain.order;
 
+import cart.domain.BaseTimeEntity;
 import cart.domain.cartitem.Quantity;
 import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderProduct {
+public class OrderProduct extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

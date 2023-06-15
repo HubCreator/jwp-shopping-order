@@ -28,7 +28,7 @@ public class CartItemRepository {
     }
 
     public List<CartItem> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select c from CartItem c where c.member = :memberId", CartItem.class)
+        return em.createQuery("select c from CartItem c join c.member m where m.id = :memberId", CartItem.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }

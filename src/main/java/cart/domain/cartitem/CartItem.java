@@ -1,5 +1,6 @@
 package cart.domain.cartitem;
 
+import cart.domain.BaseTimeEntity;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
 import cart.exception.authorization.CartItemAccessForbiddenException;
@@ -20,7 +21,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartItem {
+public class CartItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

@@ -1,5 +1,6 @@
 package cart.domain.order;
 
+import cart.domain.BaseTimeEntity;
 import cart.domain.member.Member;
 import cart.exception.authorization.OrderAccessForbiddenException;
 import lombok.AccessLevel;
@@ -14,14 +15,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Order extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -37,7 +37,6 @@ public class Order {
     private SavedPoint savedPoint;
     @Embedded
     private DeliveryFee deliveryFee;
-    private LocalDateTime orderedAt;
 
     public Order(final Member member, final UsedPoint usedPoint,
                  final SavedPoint savedPoint, final DeliveryFee deliveryFee) {
@@ -90,10 +89,10 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "id=" + id +
+                ", member=" + member +
                 ", usedPoint=" + usedPoint +
                 ", savedPoint=" + savedPoint +
                 ", deliveryFee=" + deliveryFee +
-                ", orderedAt=" + orderedAt +
                 '}';
     }
 }

@@ -1,47 +1,53 @@
 package cart.domain.cartitem;
 
 import cart.domain.member.Member;
+import cart.domain.order.DeliveryFee;
 import cart.domain.order.Order;
 import cart.domain.order.OrderProduct;
 import cart.domain.order.SavedPoint;
 import cart.domain.product.Product;
+import cart.domain.product.ProductPrice;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Getter
 public class CartItems {
 
-    private static final int DELIVERY_FEE = 3_000;
-    private static final int SALE_THRESHOLD = 50_000;
+    private static final DeliveryFee DELIVERY_FEE = new DeliveryFee(3_000);
+    private static final ProductPrice SALE_THRESHOLD = new ProductPrice(50_000);
     private static final double SALE_RATE = 0.1;
 
     private final List<CartItem> cartItems;
-    private final int totalPrice;
-    private final int deliveryFee;
+    private final ProductPrice totalPrice;
+    private final DeliveryFee deliveryFee;
     private final SavedPoint savedPoint;
 
     public CartItems(final List<CartItem> cartItems) {
         this.cartItems = cartItems;
         this.totalPrice = calculateTotalPrice(cartItems);
-        this.deliveryFee = calculateDeliveryFee(totalPrice);
-        this.savedPoint = new SavedPoint(calculateSavedPoint(totalPrice));
+        this.deliveryFee = calculateDeliveryFee();
+        this.savedPoint = calculateSavedPoint();
     }
 
-    private int calculateSavedPoint(final int price) {
-        return (int) (price * SALE_RATE);
+    private SavedPoint calculateSavedPoint() {
+        final ProductPrice appliedSalePrice = totalPrice.applySale(SALE_RATE);
+        return new SavedPoint(appliedSalePrice.getPrice());
     }
 
-    private int calculateTotalPrice(final List<CartItem> cartItems) {
-        return cartItems.stream()
+    private ProductPrice calculateTotalPrice(final List<CartItem> cartItems) {
+        final int totalPrice = cartItems.stream()
                 .mapToInt(cartitem -> cartitem.getProductPrice() * cartitem.getQuantityValue())
                 .sum();
+        return new ProductPrice(totalPrice);
     }
 
-    private int calculateDeliveryFee(final int totalPrice) {
-        if (totalPrice >= SALE_THRESHOLD) {
-            return 0;
+    private DeliveryFee calculateDeliveryFee() {
+        if (totalPrice.isOverOrEqualThan(SALE_THRESHOLD)) {
+            return DeliveryFee.none();
         }
         return DELIVERY_FEE;
     }
@@ -78,17 +84,5 @@ public class CartItems {
         return cartItems.stream()
                 .filter(m -> m.getProduct().equals(product))
                 .findFirst();
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public int getDeliveryFee() {
-        return deliveryFee;
-    }
-
-    public SavedPoint getSavedPoint() {
-        return savedPoint;
     }
 }

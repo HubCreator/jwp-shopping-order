@@ -1,5 +1,6 @@
 package cart.domain.member;
 
+import cart.domain.BaseTimeEntity;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.PointAbusedException;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

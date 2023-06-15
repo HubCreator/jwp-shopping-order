@@ -1,14 +1,17 @@
 package cart.repository;
 
+import cart.config.InitData;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -16,15 +19,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
-@Import({CartItemRepository.class, MemberRepository.class, ProductRepository.class})
+@ActiveProfiles("test")
+@Import({InitData.class, CartItemRepository.class, MemberRepository.class, ProductRepository.class})
 class CartItemRepositoryTest {
 
+    @Autowired
+    private InitData initData;
     @Autowired
     private CartItemRepository cartItemRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private ProductRepository productRepository;
+
+    @BeforeAll
+    void setUp() {
+        initData.run();
+    }
 
     @DisplayName("장바구니 상품을 추가하고 조회할 수 있다.")
     @Test
@@ -46,6 +57,26 @@ class CartItemRepositoryTest {
                 () -> assertThat(findCartItem.getProduct()).isEqualTo(product),
                 () -> assertThat(findCartItem.getQuantity()).isEqualTo(new Quantity(3))
         );
+    }
+
+    @DisplayName("특정 Member가 가진 모든 장바구니 상품을 조회할 수 있다.")
+    @Test
+    void findAllByMemberId() {
+        // given
+        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(1L);
+
+        // when, then
+        assertThat(cartItems).hasSize(6);
+    }
+
+    @DisplayName("특정 장바구니 상품 id들로 조회할 수 있다.")
+    @Test
+    void findAllByIds() {
+        // given
+        final List<CartItem> cartItems = cartItemRepository.findAllByIds(List.of(1L, 2L, 3L));
+
+        // when, then
+        assertThat(cartItems).hasSize(3);
     }
 
     @DisplayName("장바구니 상품의 수량을 수정할 수 있다.")

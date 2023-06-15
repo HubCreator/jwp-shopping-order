@@ -2,7 +2,6 @@ package cart.repository;
 
 import cart.domain.cartitem.CartItems;
 import cart.domain.member.Member;
-import cart.domain.order.DeliveryFee;
 import cart.domain.order.Order;
 import cart.domain.order.OrderProduct;
 import cart.domain.order.UsedPoint;
@@ -23,9 +22,8 @@ public class OrderRepository {
     private final OrderProductRepository orderProductRepository;
 
     public Long save(final CartItems cartItems, final Member member, final UsedPoint usedPoint) {
-        final Order order = new Order(member, usedPoint, cartItems.getSavedPoint(), new DeliveryFee(cartItems.getDeliveryFee()));
+        final Order order = new Order(member, usedPoint, cartItems.getSavedPoint(), cartItems.getDeliveryFee());
         em.persist(order);
-        em.flush();
         final List<Product> products = productRepository.findAllByIds(cartItems.getProductIds());
         final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
         orderProductRepository.saveAll(orderProducts);
@@ -37,7 +35,7 @@ public class OrderRepository {
     }
 
     public List<OrderProduct> findAllByOrderId(final Long orderId) {
-        return em.createQuery("select op from OrderProduct op where op.order = :orderId", OrderProduct.class)
+        return em.createQuery("select op from OrderProduct op join op.order o where o.id = :orderId", OrderProduct.class)
                 .setParameter("orderId", orderId)
                 .getResultList();
     }
