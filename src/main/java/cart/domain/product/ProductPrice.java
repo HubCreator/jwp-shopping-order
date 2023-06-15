@@ -20,7 +20,7 @@ public class ProductPrice {
     }
 
     public boolean isOverOrEqualThan(final ProductPrice productPrice) {
-        return this.price <= productPrice.price;
+        return this.price >= productPrice.price;
     }
 
     public ProductPrice applySale(final double saleRate) {
