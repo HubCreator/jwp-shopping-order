@@ -41,7 +41,8 @@ public class OrderRepository {
     }
 
     public List<Order> findAllByOrderIds(final List<Long> ids) {
-        return em.createQuery("select o from Order o where o.id in :ids", Order.class)
+//        em.createQuery("select distinct o from Order o join fetch o.orderProducts where o.id in :ids", Order.class)
+        return em.createQuery("select o from OrderProduct op join fetch op.order o where o.id in :ids", Order.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }

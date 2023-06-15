@@ -1,5 +1,8 @@
 package cart.ui.dto.order;
 
+import cart.domain.order.DeliveryFee;
+import cart.domain.order.UsedPoint;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -13,12 +16,12 @@ public class OrderDetailResponse {
     private final LocalDateTime orderedAt;
     private final List<OrderProductDto> products;
 
-    public OrderDetailResponse(final Long orderId, final Integer totalPrice, final Integer usedPoint, final Integer deliveryFee,
+    public OrderDetailResponse(final Long orderId, final Integer totalPrice, final UsedPoint usedPoint, final DeliveryFee deliveryFee,
                                final LocalDateTime orderedAt, final List<OrderProductDto> orderProductDtos) {
         this.orderId = orderId;
         this.totalPrice = totalPrice;
-        this.usedPoint = usedPoint;
-        this.deliveryFee = deliveryFee;
+        this.usedPoint = usedPoint.getUsedPoint();
+        this.deliveryFee = deliveryFee.getDeliveryFee();
         this.orderedAt = orderedAt;
         this.products = orderProductDtos;
     }

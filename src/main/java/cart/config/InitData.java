@@ -33,7 +33,7 @@ public class InitData implements CommandLineRunner {
 
     @Component
     @RequiredArgsConstructor
-    static class InitService {
+    public static class InitService {
 
         private final ProductRepository productRepository;
         private final MemberRepository memberRepository;

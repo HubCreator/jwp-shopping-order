@@ -10,27 +10,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DataJpaTest
-@Import({OrderRepository.class, CartItemRepository.class,
-        ProductRepository.class, OrderProductRepository.class, MemberRepository.class})
+@Transactional
+@SpringBootTest
 class OrderRepositoryTest {
 
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private OrderProductRepository orderProductRepository;
     @Autowired
     private MemberRepository memberRepository;
 
@@ -74,13 +69,28 @@ class OrderRepositoryTest {
         // then
         assertAll(
                 () -> assertThat(orderProducts).hasSize(2),
-                () -> assertThat(orderProducts.get(0).getProduct()).isEqualTo(cartItem1.getProduct()),
-                () -> assertThat(orderProducts.get(1).getProduct()).isEqualTo(cartItem2.getProduct())
+                () -> assertThat(orderProducts.get(0).getProduct()).isSameAs(cartItem1.getProduct()),
+                () -> assertThat(orderProducts.get(1).getProduct()).isSameAs(cartItem2.getProduct())
         );
     }
 
     @Test
     void findAllByOrderIds() {
+        // given
+        final CartItem cartItem3 = cartItemRepository.findOne(3L);
+        final CartItem cartItem4 = cartItemRepository.findOne(4L);
+        final CartItems cartItems2 = new CartItems(List.of(cartItem3, cartItem4));
+        final Long orderId2 = orderRepository.save(cartItems2, member, new UsedPoint(0));
+
+        // when
+        final List<Order> orders = orderRepository.findAllByOrderIds(List.of(orderId, orderId2));
+
+        // then
+        assertAll(
+                () -> assertThat(orders).hasSize(2),
+                () -> assertThat(orders.get(0).getOrderProducts()).hasSize(2),
+                () -> assertThat(orders.get(1).getOrderProducts()).hasSize(2)
+        );
     }
 
     @Test

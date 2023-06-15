@@ -95,8 +95,8 @@ public class OrderService {
                 orderProducts.stream()
                         .mapToInt(orderProduct -> orderProduct.getProductPriceValue() * orderProduct.getQuantityValue())
                         .sum(),
-                order.getUsedPointValue(),
-                order.getDeliveryFeeValue(),
+                order.getUsedPoint(),
+                order.getDeliveryFee(),
                 order.getCreatedDate(),
                 orderProducts.stream()
                         .map(orderProduct -> new OrderProductDto(

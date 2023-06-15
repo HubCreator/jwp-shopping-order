@@ -1,30 +1,24 @@
 package cart.repository;
 
-import cart.config.InitData;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@Import({InitData.class, CartItemRepository.class, MemberRepository.class, ProductRepository.class})
+@Transactional
+@SpringBootTest
 class CartItemRepositoryTest {
 
-    @Autowired
-    private InitData initData;
     @Autowired
     private CartItemRepository cartItemRepository;
     @Autowired
@@ -32,10 +26,6 @@ class CartItemRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
-    @BeforeAll
-    void setUp() {
-        initData.run();
-    }
 
     @DisplayName("장바구니 상품을 추가하고 조회할 수 있다.")
     @Test

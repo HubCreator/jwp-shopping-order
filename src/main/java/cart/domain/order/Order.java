@@ -11,10 +11,14 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -24,12 +28,15 @@ import java.util.Objects;
 public class Order extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "order")
+    private final List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Embedded
     private UsedPoint usedPoint;
@@ -50,22 +57,6 @@ public class Order extends BaseTimeEntity {
         if (!Objects.equals(this.member, member)) {
             throw new OrderAccessForbiddenException(member.getEmail());
         }
-    }
-
-    public Long getMemberId() {
-        return member.getId();
-    }
-
-    public Integer getUsedPointValue() {
-        return usedPoint.getUsedPoint();
-    }
-
-    public Integer getSavedPointValue() {
-        return savedPoint.getSavedPoint();
-    }
-
-    public int getDeliveryFeeValue() {
-        return deliveryFee.getDeliveryFee();
     }
 
     @Override
