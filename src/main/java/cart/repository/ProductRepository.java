@@ -15,12 +15,6 @@ public class ProductRepository {
 
     public void save(final Product product) {
         em.persist(product);
-
-        /*if (product.getId() == null) {
-            em.persist(product);
-            return;
-        }
-        em.merge(product);*/
     }
 
     public Product findOne(final Long productId) {
@@ -43,7 +37,7 @@ public class ProductRepository {
         findProduct.updateTo(product);
     }
 
-    public void delete(final Long productId) {
+    public void deleteById(final Long productId) {
         final Product findProduct = findOne(productId);
         em.remove(findProduct);
     }

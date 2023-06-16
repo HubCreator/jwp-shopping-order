@@ -12,6 +12,7 @@ import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
+import cart.env.ProfileZone;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
 import cart.repository.OrderRepository;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
-@Profile({"dev", "test"})
+@Profile({ProfileZone.DEV, ProfileZone.TEST})
 @RequiredArgsConstructor
 public class InitData implements CommandLineRunner {
 

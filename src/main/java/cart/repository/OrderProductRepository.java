@@ -13,13 +13,6 @@ public class OrderProductRepository {
 
     private final EntityManager em;
 
-    public void saveAll(final List<OrderProduct> orderProducts) {
-        // TODO : 최적화할 수 있지 않을까
-        for (OrderProduct orderProduct : orderProducts) {
-            em.persist(orderProduct);
-        }
-    }
-
     public List<OrderProduct> findAllByMemberId(final Long memberId) {
         return em.createQuery("select op from OrderProduct op join op.order o where o.member.id = :memberId", OrderProduct.class)
                 .setParameter("memberId", memberId)

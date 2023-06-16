@@ -19,11 +19,6 @@ public class MemberRepository {
 
     public void save(final Member member) {
         em.persist(member);
-        /*if (member.getId() == null) {
-            em.persist(member);
-            return;
-        }
-        em.merge(member);*/
     }
 
     public Member findOne(final Long id) {

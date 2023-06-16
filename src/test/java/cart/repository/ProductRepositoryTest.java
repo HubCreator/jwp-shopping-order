@@ -97,7 +97,7 @@ class ProductRepositoryTest {
     @Test
     void delete() {
         // given
-        productRepository.delete(1L);
+        productRepository.deleteById(1L);
 
         // when
         final Product product = productRepository.findOne(1L);

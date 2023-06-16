@@ -25,7 +25,6 @@ public class OrderRepository {
         final Order order = new Order(member, usedPoint, cartItems.getSavedPoint(), cartItems.getDeliveryFee());
         final List<Product> products = productRepository.findAllByIds(cartItems.getProductIds());
         final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
-//        orderProductRepository.saveAll(orderProducts);
         order.updateOrderProduct(orderProducts);
         em.persist(order);
         return order.getId();

@@ -17,11 +17,6 @@ public class CartItemRepository {
 
     public void save(final CartItem cartItem) {
         em.persist(cartItem);
-        /*if (cartItem.getId() == null) {
-            em.persist(cartItem);
-            return;
-        }
-        em.merge(cartItem);*/
     }
 
     public CartItem findOne(final Long id) {

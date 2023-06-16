@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
 
@@ -49,6 +49,6 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(final Long productId) {
-        productRepository.delete(productId);
+        productRepository.deleteById(productId);
     }
 }

@@ -16,7 +16,7 @@
     </springProfile>
 
 
-    <springProfile name="prod">
+    <springProfile name="}prod">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>logs/warn.log</file>
