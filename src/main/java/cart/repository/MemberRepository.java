@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import java.util.List;
 
 @Repository
@@ -22,7 +21,11 @@ public class MemberRepository {
     }
 
     public Member findOne(final Long id) {
-        return em.find(Member.class, id);
+        final Member member = em.find(Member.class, id);
+        if (member == null) {
+            throw new MemberNotFoundException(id);
+        }
+        return member;
     }
 
     public Member findByEmail(final MemberEmail email) {
@@ -30,8 +33,8 @@ public class MemberRepository {
             return em.createQuery("select m from Member m where m.email = :email", Member.class)
                     .setParameter("email", email)
                     .getSingleResult();
-        } catch (final NoResultException | NonUniqueResultException e) {
-            throw new MemberNotFoundException(email);
+        } catch (final NoResultException e) {
+            throw new MemberNotFoundException(email, e);
         }
     }
 

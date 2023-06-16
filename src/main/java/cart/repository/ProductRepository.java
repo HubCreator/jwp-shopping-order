@@ -1,6 +1,7 @@
 package cart.repository;
 
 import cart.domain.product.Product;
+import cart.exception.notfound.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,8 +18,12 @@ public class ProductRepository {
         em.persist(product);
     }
 
-    public Product findOne(final Long productId) {
-        return em.find(Product.class, productId);
+    public Product findOne(final Long id) {
+        final Product product = em.find(Product.class, id);
+        if (product == null) {
+            throw new ProductNotFoundException(id);
+        }
+        return product;
     }
 
     public List<Product> findAll() {
@@ -37,8 +42,8 @@ public class ProductRepository {
         findProduct.updateTo(product);
     }
 
-    public void deleteById(final Long productId) {
-        final Product findProduct = findOne(productId);
+    public void deleteById(final Long id) {
+        final Product findProduct = findOne(id);
         em.remove(findProduct);
     }
 }

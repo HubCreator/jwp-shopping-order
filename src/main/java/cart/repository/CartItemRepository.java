@@ -2,6 +2,7 @@ package cart.repository;
 
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
+import cart.exception.notfound.CartItemNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +21,11 @@ public class CartItemRepository {
     }
 
     public CartItem findOne(final Long id) {
-        return em.find(CartItem.class, id);
+        final CartItem cartItem = em.find(CartItem.class, id);
+        if (cartItem == null) {
+            throw new CartItemNotFoundException(id);
+        }
+        return cartItem;
     }
 
     public List<CartItem> findAllByMemberId(final Long memberId) {
@@ -36,7 +41,7 @@ public class CartItemRepository {
     }
 
     public void updateQuantity(final CartItem cartItem, final Quantity quantity) {
-        final CartItem findCartItem = em.find(CartItem.class, cartItem.getId());
+        final CartItem findCartItem = findOne(cartItem.getId());
         findCartItem.updateQuantity(quantity);
     }
 

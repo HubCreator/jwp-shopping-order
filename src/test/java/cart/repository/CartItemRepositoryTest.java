@@ -4,6 +4,7 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
+import cart.exception.notfound.CartItemNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -103,11 +105,9 @@ class CartItemRepositoryTest {
         final CartItem cartItem = cartItemRepository.findOne(1L);
         cartItemRepository.delete(cartItem);
 
-        // when
-        final CartItem findCartItem = cartItemRepository.findOne(1L);
-
-        // then
-        assertThat(findCartItem).isNull();
+        // when, then
+        assertThatThrownBy(() -> cartItemRepository.findOne(1L))
+                .isInstanceOf(CartItemNotFoundException.class);
     }
 
     @DisplayName("특정 장바구니 상품들을 삭제할 수 있다.")
@@ -127,12 +127,14 @@ class CartItemRepositoryTest {
         );
 
         // then
-        final CartItem deletedCartItem1 = cartItemRepository.findOne(1L);
-        final CartItem deletedCartItem2 = cartItemRepository.findOne(2L);
-        final CartItem deletedCartItem3 = cartItemRepository.findOne(3L);
-        assertThat(deletedCartItem1).isNull();
-        assertThat(deletedCartItem2).isNull();
-        assertThat(deletedCartItem3).isNull();
+        assertAll(
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(1L))
+                        .isInstanceOf(CartItemNotFoundException.class),
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(2L))
+                        .isInstanceOf(CartItemNotFoundException.class),
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(3L))
+                        .isInstanceOf(CartItemNotFoundException.class)
+        );
     }
 
     @DisplayName("특정 장바구니 id들의 상품들을 삭제할 수 있다.")
@@ -142,9 +144,11 @@ class CartItemRepositoryTest {
         final CartItem cartItem1 = cartItemRepository.findOne(1L);
         final CartItem cartItem2 = cartItemRepository.findOne(2L);
         final CartItem cartItem3 = cartItemRepository.findOne(3L);
-        assertThat(cartItem1).isNotNull();
-        assertThat(cartItem2).isNotNull();
-        assertThat(cartItem3).isNotNull();
+        assertAll(
+                () -> assertThat(cartItem1).isNotNull(),
+                () -> assertThat(cartItem2).isNotNull(),
+                () -> assertThat(cartItem3).isNotNull()
+        );
 
         // when
         cartItemRepository.deleteByIds(
@@ -152,11 +156,13 @@ class CartItemRepositoryTest {
         );
 
         // then
-        final CartItem deletedCartItem1 = cartItemRepository.findOne(1L);
-        final CartItem deletedCartItem2 = cartItemRepository.findOne(2L);
-        final CartItem deletedCartItem3 = cartItemRepository.findOne(3L);
-        assertThat(deletedCartItem1).isNull();
-        assertThat(deletedCartItem2).isNull();
-        assertThat(deletedCartItem3).isNull();
+        assertAll(
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(1L))
+                        .isInstanceOf(CartItemNotFoundException.class),
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(2L))
+                        .isInstanceOf(CartItemNotFoundException.class),
+                () -> assertThatThrownBy(() -> cartItemRepository.findOne(3L))
+                        .isInstanceOf(CartItemNotFoundException.class)
+        );
     }
 }

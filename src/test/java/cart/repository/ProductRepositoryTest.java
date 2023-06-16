@@ -4,6 +4,7 @@ import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
+import cart.exception.notfound.ProductNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -99,10 +101,8 @@ class ProductRepositoryTest {
         // given
         productRepository.deleteById(1L);
 
-        // when
-        final Product product = productRepository.findOne(1L);
-
-        // then
-        assertThat(product).isNull();
+        // when, then
+        assertThatThrownBy(() -> productRepository.findOne(1L))
+                .isInstanceOf(ProductNotFoundException.class);
     }
 }

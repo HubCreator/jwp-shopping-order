@@ -6,6 +6,7 @@ import cart.domain.order.Order;
 import cart.domain.order.OrderProduct;
 import cart.domain.order.UsedPoint;
 import cart.domain.product.Product;
+import cart.exception.notfound.OrderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +32,11 @@ public class OrderRepository {
     }
 
     public Order findOne(final Long id) {
-        return em.find(Order.class, id);
+        final Order order = em.find(Order.class, id);
+        if (order == null) {
+            throw new OrderNotFoundException(id);
+        }
+        return order;
     }
 
     public List<Order> findAllByOrderIds(final List<Long> ids) {
