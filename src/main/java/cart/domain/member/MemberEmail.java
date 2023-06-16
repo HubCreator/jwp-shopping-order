@@ -1,11 +1,13 @@
 package cart.domain.member;
 
 import cart.exception.business.member.InvalidMemberEmailException;
+import lombok.Getter;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
+@Getter
 public class MemberEmail {
 
     private final String email;
@@ -23,10 +25,6 @@ public class MemberEmail {
         if (email.isBlank() || !email.contains("@")) {
             throw new InvalidMemberEmailException(email);
         }
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     @Override
