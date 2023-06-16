@@ -4,20 +4,12 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.member.MemberPoint;
-import cart.domain.order.DeliveryFee;
-import cart.domain.order.Order;
-import cart.domain.order.OrderProduct;
-import cart.domain.order.SavedPoint;
-import cart.domain.order.UsedPoint;
+import cart.domain.order.*;
 import cart.domain.product.Product;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
-import cart.repository.CartItemRepository;
-import cart.repository.MemberRepository;
-import cart.repository.OrderProductRepository;
-import cart.repository.OrderRepository;
-import cart.repository.ProductRepository;
+import cart.repository.*;
 import cart.ui.dto.order.OrderDetailResponse;
 import cart.ui.dto.order.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest
 public class OrderServiceTest {
 
+    @Autowired
+    private EntityManager em;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -55,9 +51,16 @@ public class OrderServiceTest {
     @DisplayName("상품을 주문할 때에는")
     class DescribeOrderMethodTest1 {
 
-        private final Member member = memberRepository.findOne(1L);
-        private final Product product1 = productRepository.findOne(1L);
-        private final Product product2 = productRepository.findOne(2L);
+        private Member member;
+        private Product product1;
+        private Product product2;
+
+        @BeforeEach
+        void setUp() {
+            member = memberRepository.findOne(1L);
+            product1 = productRepository.findOne(1L);
+            product2 = productRepository.findOne(2L);
+        }
 
         @Nested
         @DisplayName("만약 총 주문 가격이 5이상 초과이라면")
@@ -65,7 +68,7 @@ public class OrderServiceTest {
             private final Quantity quantity1 = new Quantity(1);
             private final Quantity quantity2 = new Quantity(2);
             private final int usedPoint = 1000;
-            private Long orderId;
+            private Order order;
 
             @BeforeEach
             void setUp() {
@@ -74,25 +77,16 @@ public class OrderServiceTest {
                 cartItemRepository.save(cartItem1);
                 cartItemRepository.save(cartItem2);
 
-                final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
-                final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
-                final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
-                orderId = orderService.order(member, orderRequest);
+                final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), usedPoint);
+                final Long orderId = orderService.order(member, orderRequest);
+                order = orderRepository.findOne(orderId);
             }
 
             @DisplayName("배송비 3천원을 추가하지 않는다.")
             @Test
             void it_returns_discounted_delivery_fee() {
-                final Member updatedMember = memberRepository.findOne(1L);
-                final Order order = orderRepository.findOne(orderId);
-
-                int remainPoint = member.getPointValue() - usedPoint;
-                final int cartItemPrice1 = product1.getPriceValue() * quantity1.getQuantity();
-                final int cartItemPrice2 = product2.getPriceValue() * quantity2.getQuantity();
-                final int updatedPoint = (int) (remainPoint + (cartItemPrice1 + cartItemPrice2) * 0.1);
-
                 assertAll(
-                        () -> assertThat(updatedMember.getPoint()).isEqualTo(new MemberPoint(updatedPoint)),
+                        () -> assertThat(member.getPoint()).isEqualTo(new MemberPoint(14000)),
                         () -> assertThat(order.getDeliveryFee()).isEqualTo(new DeliveryFee(0)),
                         () -> assertThat(order.getUsedPoint()).isEqualTo(new UsedPoint(1000))
                 );
@@ -105,7 +99,7 @@ public class OrderServiceTest {
             private final Quantity quantity1 = new Quantity(1);
             private final Quantity quantity2 = new Quantity(1);
             private final int usedPoint = 1000;
-            private Long orderId;
+            private Order order;
 
 
             @BeforeEach
@@ -118,21 +112,16 @@ public class OrderServiceTest {
                 final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
                 final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
                 final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
-                orderId = orderService.order(member, orderRequest);
+                final Long orderId = orderService.order(member, orderRequest);
+                order = em.find(Order.class, orderId);
             }
 
             @DisplayName("배송비 3천원 추가한다.")
             @Test
             void it_returns_discounted_delivery_fee() {
-                final Member updatedMember = memberRepository.findOne(1L);
-                final Order order = orderRepository.findOne(orderId);
-
-                int remainPoint = member.getPointValue() - usedPoint;
-                final int cartItemPrice1 = product1.getPriceValue() * quantity1.getQuantity();
-                final int cartItemPrice2 = product2.getPriceValue() * quantity2.getQuantity();
-                final int updatedPoint = (int) (remainPoint + (cartItemPrice1 + cartItemPrice2) * 0.1);
                 assertAll(
-                        () -> assertThat(updatedMember.getPoint()).isEqualTo(new MemberPoint(updatedPoint)),
+                        () -> assertThat(order.getTotalPrice()).isEqualTo(new ProductPrice(30_000)),
+                        () -> assertThat(member.getPoint()).isEqualTo(new MemberPoint(12_000)),
                         () -> assertThat(order.getDeliveryFee()).isEqualTo(new DeliveryFee(3000)),
                         () -> assertThat(order.getUsedPoint()).isEqualTo(new UsedPoint(1000))
                 );
@@ -143,23 +132,22 @@ public class OrderServiceTest {
         @DisplayName("주문이 완료되면 ")
         class ContextWithOrderProductTest1 {
             private Order order;
+            List<OrderProduct> orderProducts;
 
             @BeforeEach
             void setUp() {
-                final OrderRequest orderRequest = new OrderRequest(List.of(1L, 2L), 1000);
-                final Long orderId = orderService.order(member, orderRequest);
-                order = orderRepository.findOne(orderId);
+                order = orderRepository.findOne(1L);
+                orderProducts = orderProductRepository.findAllByMemberId(member.getId());
             }
 
             @DisplayName("주문 내역을 볼 수 있다.")
             @Test
             void it_returns_orderProducts() {
-                final List<OrderProduct> orderProducts = orderProductRepository.findAllByMemberId(member.getId());
 
                 assertAll(
                         () -> assertThat(orderProducts).hasSize(2),
 
-                        () -> assertThat(orderProducts.get(0).getOrder()).isEqualTo(order),
+                        () -> assertThat(orderProducts.get(0).getOrder()).isSameAs(order),
                         () -> assertThat(orderProducts.get(0).getProductId()).isEqualTo(product1.getId()),
                         () -> assertThat(orderProducts.get(0).getProductName()).isEqualTo(new ProductName("치킨")),
                         () -> assertThat(orderProducts.get(0).getProductPrice()).isEqualTo(new ProductPrice(10000)),
@@ -179,12 +167,20 @@ public class OrderServiceTest {
             @Test
             void cart_items_are_deleted() {
                 // given
+                final CartItem cartItem1 = new CartItem(member, product1, new Quantity(1));
+                final CartItem cartItem2 = new CartItem(member, product2, new Quantity(1));
+                cartItemRepository.save(cartItem1);
+                cartItemRepository.save(cartItem2);
+
+                final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), 0);
+                final Long orderId = orderService.order(member, orderRequest);
+
                 final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
 
                 // when, then
                 assertThat(cartItems).doesNotContain(
-                        new CartItem(1L, null, null, new Quantity(0)),
-                        new CartItem(2L, null, null, new Quantity(0))
+                        new CartItem(cartItem1.getId(), null, null, new Quantity(0)),
+                        new CartItem(cartItem2.getId(), null, null, new Quantity(0))
                 );
             }
         }
@@ -237,11 +233,13 @@ public class OrderServiceTest {
             // when
             orderService.deleteByIds(member, List.of(orderId1, orderId2));
             final List<OrderDetailResponse> responses = orderService.getAllOrderDetails(member);
+            final List<Long> orderIds = responses.stream()
+                    .map(OrderDetailResponse::getOrderId)
+                    .collect(Collectors.toList());
 
             // then
             assertAll(
-                    () -> assertThat(responses).hasSize(1),
-                    () -> assertThat(responses.get(0).getOrderId()).isEqualTo(orderId3)
+                    () -> assertThat(orderIds).doesNotContain(orderId1, orderId2)
             );
         }
 

@@ -7,11 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -54,14 +50,13 @@ public class Member extends BaseTimeEntity {
         return this.password.equals(password);
     }
 
-    public Member updatePoint(final MemberPoint requestedPoint, final ProductPrice productTotalPrice) {
+    public void updatePoint(final MemberPoint requestedPoint, final ProductPrice productTotalPrice) {
         if (point.isLowerThan(requestedPoint)) {
             throw new PointAbusedException(point, requestedPoint);
         }
         final MemberPoint minusPoint = point.minus(requestedPoint);
         final MemberPoint resultPoint = minusPoint.addPointByTotalPrice(productTotalPrice);
-
-        return new Member(id, email, password, resultPoint);
+        this.point = resultPoint;
     }
 
     public String getEmailValue() {

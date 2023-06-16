@@ -2,6 +2,7 @@ package cart.domain.order;
 
 import cart.domain.BaseTimeEntity;
 import cart.domain.member.Member;
+import cart.domain.product.ProductPrice;
 import cart.exception.authorization.OrderAccessForbiddenException;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Embedded
@@ -52,6 +53,13 @@ public class Order extends BaseTimeEntity {
 
     public void updateOrderProduct(final List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
+    }
+
+    public ProductPrice getTotalPrice() {
+        final int totalPRice = orderProducts.stream()
+                .mapToInt(m -> m.getProductPrice().getPrice())
+                .sum();
+        return new ProductPrice(totalPRice);
     }
 
     @Override

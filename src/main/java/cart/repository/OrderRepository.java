@@ -25,7 +25,7 @@ public class OrderRepository {
         final Order order = new Order(member, usedPoint, cartItems.getSavedPoint(), cartItems.getDeliveryFee());
         final List<Product> products = productRepository.findAllByIds(cartItems.getProductIds());
         final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
-        orderProductRepository.saveAll(orderProducts);
+//        orderProductRepository.saveAll(orderProducts);
         order.updateOrderProduct(orderProducts);
         em.persist(order);
         return order.getId();
@@ -52,12 +52,11 @@ public class OrderRepository {
         final List<Long> ids = orders.stream()
                 .map(Order::getId)
                 .collect(Collectors.toList());
-        orderProductRepository.deleteByOrderId(ids);
+        orderProductRepository.deleteByOrderIds(ids);
 
         em.createQuery("delete Order o where o.id in :ids")
                 .setParameter("ids", ids)
                 .executeUpdate();
-
         em.clear();
     }
 }

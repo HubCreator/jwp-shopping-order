@@ -13,9 +13,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class OrderIntegrationTest extends IntegrationTest {
 
@@ -38,7 +36,7 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .when().post("/orders")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
-                .header("Location", "/orders/1");
+                .header("Location", "/orders/2");
     }
 
     @DisplayName("주문 id와 연관된 ProductItem 정보를 확인할 수 있다.")
@@ -47,7 +45,7 @@ public class OrderIntegrationTest extends IntegrationTest {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .auth().preemptive().basic(member.getEmailValue(), member.getPasswordValue())
-                .when().get("/orders/1")
+                .when().get("/orders/2")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
     }
@@ -58,10 +56,10 @@ public class OrderIntegrationTest extends IntegrationTest {
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .auth().preemptive().basic(member.getEmailValue(), member.getPasswordValue())
-                .when().get("/orders/1")
+                .when().get("/orders/2")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("orderId", is(1))
+                .body("orderId", is(2))
                 .body("totalPrice", is(100_000))
                 .body("deliveryFee", is(0))
                 .body("usedPoint", is(1_000))
@@ -81,7 +79,7 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .when().post("/orders")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
-                .header("Location", "/orders/2");
+                .header("Location", "/orders/3");
 
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -89,23 +87,23 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .when().get("/orders")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("[0].orderId", is(1))
-                .body("[0].totalPrice", is(100_000))
-                .body("[0].deliveryFee", is(0))
-                .body("[0].usedPoint", is(1_000))
-                .body("[0].orderedAt", notNullValue())
-                .body("[0].products", hasSize(2))
-                .body("[0].products[0].product.id", is(1))
-                .body("[0].products[1].product.id", is(2))
-
                 .body("[1].orderId", is(2))
-                .body("[1].totalPrice", is(82_000))
+                .body("[1].totalPrice", is(100_000))
                 .body("[1].deliveryFee", is(0))
-                .body("[1].usedPoint", is(0))
+                .body("[1].usedPoint", is(1_000))
                 .body("[1].orderedAt", notNullValue())
-                .body("[1].products", hasSize(3))
-                .body("[1].products[0].product.id", is(2))
-                .body("[1].products[1].product.id", is(3))
-                .body("[1].products[2].product.id", is(4));
+                .body("[1].products", hasSize(2))
+                .body("[1].products[0].product.id", is(1))
+                .body("[1].products[1].product.id", is(2))
+
+                .body("[2].orderId", is(3))
+                .body("[2].totalPrice", is(82_000))
+                .body("[2].deliveryFee", is(0))
+                .body("[2].usedPoint", is(0))
+                .body("[2].orderedAt", notNullValue())
+                .body("[2].products", hasSize(3))
+                .body("[2].products[0].product.id", is(2))
+                .body("[2].products[1].product.id", is(3))
+                .body("[2].products[2].product.id", is(4));
     }
 }

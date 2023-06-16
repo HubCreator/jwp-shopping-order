@@ -40,9 +40,8 @@ public class OrderService {
         cartItems.checkOwner(findMember);
         final ProductPrice totalPrice = cartItems.getTotalPrice();
         validateInvalidPointUse(request, cartItems, totalPrice);
-        final Member updatedMember = findMember.updatePoint(new MemberPoint(request.getPoint()), totalPrice);
-        memberRepository.save(updatedMember);
-        final Long orderId = orderRepository.save(cartItems, updatedMember, new UsedPoint(request.getPoint()));
+        findMember.updatePoint(new MemberPoint(request.getPoint()), totalPrice);
+        final Long orderId = orderRepository.save(cartItems, findMember, new UsedPoint(request.getPoint()));
         cartItemRepository.deleteByIds(cartItems.getCartItemIds());
         return orderId;
     }

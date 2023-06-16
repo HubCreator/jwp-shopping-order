@@ -21,7 +21,7 @@ public class OrderProductRepository {
     }
 
     public List<OrderProduct> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select op from OrderProduct op join op.order o where o.member = :memberId", OrderProduct.class)
+        return em.createQuery("select op from OrderProduct op join op.order o where o.member.id = :memberId", OrderProduct.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
@@ -32,7 +32,7 @@ public class OrderProductRepository {
                 .getResultList();
     }
 
-    public void deleteByOrderId(final List<Long> orderIds) {
+    public void deleteByOrderIds(final List<Long> orderIds) {
         em.createQuery("delete OrderProduct op where op.order.id in :ids")
                 .setParameter("ids", orderIds)
                 .executeUpdate();
