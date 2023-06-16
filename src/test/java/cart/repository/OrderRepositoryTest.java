@@ -35,7 +35,7 @@ class OrderRepositoryTest {
     CartItem cartItem1;
     CartItem cartItem2;
     private CartItems cartItems;
-    private Long orderId;
+    private Order order;
 
     @BeforeEach
     void setUp() {
@@ -44,16 +44,14 @@ class OrderRepositoryTest {
         cartItem1 = cartItemRepository.findOne(3L);
         cartItem2 = cartItemRepository.findOne(4L);
         cartItems = new CartItems(List.of(cartItem1, cartItem2));
-        orderId = orderRepository.save(cartItems, member, new UsedPoint(1_000));
+        final Long orderId = orderRepository.save(cartItems, member, new UsedPoint(1_000));
+        order = em.find(Order.class, orderId);
     }
 
     @DisplayName("주문을 저장하고 조회한다.")
     @Test
     void saveAndFind() {
-        // when
-        final Order order = orderRepository.findOne(orderId);
-
-        // then
+        // when, then
         assertAll(
                 () -> assertThat(order.getMember()).isEqualTo(member),
                 () -> assertThat(order.getUsedPoint()).isEqualTo(new UsedPoint(1_000)),
@@ -72,7 +70,7 @@ class OrderRepositoryTest {
         final Long orderId2 = orderRepository.save(cartItems2, member, new UsedPoint(0));
 
         // when
-        final List<Order> orders = orderRepository.findAllByOrderIds(List.of(1L, orderId, orderId2));
+        final List<Order> orders = orderRepository.findAllByOrderIds(List.of(1L, order.getId(), orderId2));
 
         // then
         assertAll(
@@ -101,14 +99,12 @@ class OrderRepositoryTest {
         final int orderSize = orders.size();
 
         // when
-        final Order order1 = orderRepository.findOne(1L);
-        final Order order2 = orderRepository.findOne(2L);
-        orderRepository.deleteAll(List.of(order1, order2));
+        orderRepository.deleteAll(List.of(order));
 
         List<Order> deletedOrders = orderRepository.findAllByMemberId(member.getId());
         final int deletedOrderSize = deletedOrders.size();
 
         // then
-        assertThat(orderSize - 2).isEqualTo(deletedOrderSize);
+        assertThat(orderSize - 1).isEqualTo(deletedOrderSize);
     }
 }
