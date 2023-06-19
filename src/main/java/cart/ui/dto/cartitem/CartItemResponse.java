@@ -2,35 +2,20 @@ package cart.ui.dto.cartitem;
 
 import cart.domain.cartitem.CartItem;
 import cart.ui.dto.product.ProductResponse;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class CartItemResponse {
-    private final Long id;
-    private final int quantity;
-    private final ProductResponse product;
 
-    private CartItemResponse(Long id, int quantity, ProductResponse product) {
-        this.id = id;
-        this.quantity = quantity;
-        this.product = product;
-    }
+    private Long id;
+    private int quantity;
+    private ProductResponse product;
 
-    public static CartItemResponse from(CartItem cartItem) {
-        return new CartItemResponse(
-                cartItem.getId(),
-                cartItem.getQuantityValue(),
-                ProductResponse.from(cartItem.getProduct())
-        );
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public ProductResponse getProduct() {
-        return product;
+    public CartItemResponse(final CartItem cartItem) {
+        this.id = cartItem.getId();
+        this.quantity = cartItem.getQuantityValue();
+        this.product = new ProductResponse(cartItem.getProduct());
     }
 }

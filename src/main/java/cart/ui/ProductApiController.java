@@ -31,15 +31,16 @@ public class ProductApiController {
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        final List<ProductResponse> productResponses = productService.getAllProducts().stream()
-                .map(ProductResponse::from)
+        final List<ProductResponse> productResponses = productService.getAllProducts()
+                .stream()
+                .map(ProductResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(productResponses);
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
-        final ProductResponse productResponse = ProductResponse.from(productService.getProductById(productId));
+        final ProductResponse productResponse = new ProductResponse(productService.getProductById(productId));
         return ResponseEntity.ok(productResponse);
     }
 

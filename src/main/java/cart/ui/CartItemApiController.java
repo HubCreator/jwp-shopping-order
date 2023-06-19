@@ -45,7 +45,7 @@ public class CartItemApiController {
     public ResponseEntity<List<CartItemResponse>> showCartItems(Member member) {
         final List<CartItemResponse> cartItemResponses = cartItemService.getCartItemsByMember(member)
                 .stream()
-                .map(CartItemResponse::from)
+                .map(CartItemResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(cartItemResponses);
     }
