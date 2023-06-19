@@ -1,12 +1,13 @@
 package cart.ui;
 
 import cart.application.CartItemService;
+import cart.application.dto.cartitem.CartItemIdsRequest;
+import cart.application.dto.cartitem.CartItemQuantityUpdateRequest;
+import cart.application.dto.cartitem.CartItemRequest;
 import cart.domain.member.Member;
-import cart.ui.dto.cartitem.CartItemIdsRequest;
-import cart.ui.dto.cartitem.CartItemQuantityUpdateRequest;
-import cart.ui.dto.cartitem.CartItemRequest;
 import cart.ui.dto.cartitem.CartItemResponse;
 import cart.ui.dto.cartitem.CartItemsPriceResponse;
+import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class CartItemApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemResponse>> showCartItems(final Member member) {
+    public ResponseEntity<List<CartItemResponse>> showCartItems(Member member) {
         final List<CartItemResponse> cartItemResponses = cartItemService.getCartItemsByMember(member)
                 .stream()
                 .map(CartItemResponse::from)
@@ -74,7 +75,7 @@ public class CartItemApiController {
     @GetMapping("/price")
     public ResponseEntity<CartItemsPriceResponse> getCartItemsPrice(Member member,
                                                                     @RequestParam List<Long> item) {
-        final CartItemsPriceResponse response = cartItemService.getPaymentInfo(member, item);
-        return ResponseEntity.ok(response);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, item);
+        return ResponseEntity.ok(new CartItemsPriceResponse(resultDto));
     }
 }

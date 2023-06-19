@@ -1,14 +1,14 @@
 package cart.integration;
 
+import cart.application.dto.cartitem.CartItemIdsRequest;
+import cart.application.dto.cartitem.CartItemQuantityUpdateRequest;
+import cart.application.dto.cartitem.CartItemRequest;
+import cart.application.dto.product.ProductRequest;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
 import cart.repository.MemberRepository;
-import cart.ui.dto.cartitem.CartItemIdsRequest;
-import cart.ui.dto.cartitem.CartItemQuantityUpdateRequest;
-import cart.ui.dto.cartitem.CartItemRequest;
 import cart.ui.dto.cartitem.CartItemResponse;
-import cart.ui.dto.product.ProductRequest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;

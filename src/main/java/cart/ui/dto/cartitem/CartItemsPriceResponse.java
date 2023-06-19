@@ -1,23 +1,15 @@
 package cart.ui.dto.cartitem;
 
-import cart.domain.order.DeliveryFee;
-import cart.domain.product.ProductPrice;
+import lombok.Data;
 
+@Data
 public class CartItemsPriceResponse {
 
-    private final Integer totalPrice;
-    private final Integer deliveryFee;
+    private final int totalPrice;
+    private final int deliveryFee;
 
-    public CartItemsPriceResponse(final ProductPrice totalPrice, final DeliveryFee deliveryFee) {
-        this.totalPrice = totalPrice.getPrice();
-        this.deliveryFee = deliveryFee.getDeliveryFee();
-    }
-
-    public Integer getTotalPrice() {
-        return totalPrice;
-    }
-
-    public Integer getDeliveryFee() {
-        return deliveryFee;
+    public CartItemsPriceResponse(final TotalPriceAndDeliveryFeeDto dto) {
+        this.totalPrice = dto.getTotalPrice();
+        this.deliveryFee = dto.getDeliveryFee();
     }
 }

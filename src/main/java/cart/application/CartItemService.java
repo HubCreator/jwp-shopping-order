@@ -1,5 +1,8 @@
 package cart.application;
 
+import cart.application.dto.cartitem.CartItemIdsRequest;
+import cart.application.dto.cartitem.CartItemQuantityUpdateRequest;
+import cart.application.dto.cartitem.CartItemRequest;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.CartItems;
 import cart.domain.cartitem.Quantity;
@@ -7,10 +10,7 @@ import cart.domain.member.Member;
 import cart.domain.product.Product;
 import cart.repository.CartItemRepository;
 import cart.repository.ProductRepository;
-import cart.ui.dto.cartitem.CartItemIdsRequest;
-import cart.ui.dto.cartitem.CartItemQuantityUpdateRequest;
-import cart.ui.dto.cartitem.CartItemRequest;
-import cart.ui.dto.cartitem.CartItemsPriceResponse;
+import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,9 +73,9 @@ public class CartItemService {
         cartItemRepository.deleteAll(cartItems.getCartItems());
     }
 
-    public CartItemsPriceResponse getPaymentInfo(final Member member, final List<Long> cartItemIds) {
+    public TotalPriceAndDeliveryFeeDto getPaymentInfo(final Member member, final List<Long> cartItemIds) {
         final CartItems cartItems = new CartItems(cartItemRepository.findAllByIds(cartItemIds));
         cartItems.checkOwner(member);
-        return new CartItemsPriceResponse(cartItems.getTotalPrice(), cartItems.getDeliveryFee());
+        return new TotalPriceAndDeliveryFeeDto(cartItems.getTotalPrice(), cartItems.getDeliveryFee());
     }
 }

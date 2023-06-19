@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,18 @@ public class OrderRepository {
             throw new OrderNotFoundException(id);
         }
         return order;
+    }
+
+    public Order findOneWithOrderItems(final Long id) {
+        try {
+            return em.createQuery("select o from Order o " +
+                            "join fetch o.orderProducts op " +
+                            "where o.id = :id", Order.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (final NoResultException e) {
+            throw new OrderNotFoundException(id);
+        }
     }
 
     public List<Order> findAllByOrderIds(final List<Long> ids) {

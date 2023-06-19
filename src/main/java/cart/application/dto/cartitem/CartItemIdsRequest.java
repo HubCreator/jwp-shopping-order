@@ -1,4 +1,4 @@
-package cart.ui.dto.cartitem;
+package cart.application.dto.cartitem;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;

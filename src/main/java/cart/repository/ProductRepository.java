@@ -43,7 +43,7 @@ public class ProductRepository {
     }
 
     public void deleteById(final Long id) {
-        final Product findProduct = findOne(id);
-        em.remove(findProduct);
+        final Product product = findOne(id);
+        em.remove(product);
     }
 }

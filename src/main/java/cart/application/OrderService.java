@@ -1,10 +1,10 @@
 package cart.application;
 
+import cart.application.dto.order.OrderRequest;
 import cart.domain.cartitem.CartItems;
 import cart.domain.member.Member;
 import cart.domain.member.MemberPoint;
 import cart.domain.order.Order;
-import cart.domain.order.OrderProduct;
 import cart.domain.order.UsedPoint;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
@@ -12,15 +12,11 @@ import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
 import cart.repository.OrderProductRepository;
 import cart.repository.OrderRepository;
-import cart.ui.dto.order.OrderDetailResponse;
-import cart.ui.dto.order.OrderProductDto;
-import cart.ui.dto.order.OrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,19 +48,16 @@ public class OrderService {
         }
     }
 
-    public OrderDetailResponse getOrderDetail(final Member member, final Long orderId) {
-        final Order order = orderRepository.findOne(orderId);
+    public Order getOrderDetail(final Member member, final Long orderId) {
+        final Order order = orderRepository.findOneWithOrderItems(orderId);
         order.checkOwner(member);
-        final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderId(orderId);
-        return getOrderDetailResponse(order, orderProducts);
+        return order;
     }
 
-    public List<OrderDetailResponse> getAllOrderDetails(final Member member) {
+    public List<Order> getAllOrderDetails(final Member member) {
         final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
         orders.forEach(order -> order.checkOwner(member));
-        return orders.stream()
-                .map(OrderDetailResponse::new)
-                .collect(Collectors.toList());
+        return orders;
     }
 
     @Transactional
@@ -79,25 +72,5 @@ public class OrderService {
         final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
         orders.forEach(order -> order.checkOwner(member));
         orderRepository.deleteAll(orders);
-    }
-
-    private OrderDetailResponse getOrderDetailResponse(final Order order, final List<OrderProduct> orderProducts) {
-        return new OrderDetailResponse(
-                order.getId(),
-                orderProducts.stream()
-                        .mapToInt(orderProduct -> orderProduct.getProductPriceValue() * orderProduct.getQuantityValue())
-                        .sum(),
-                order.getUsedPoint(),
-                order.getDeliveryFee(),
-                order.getCreatedDate(),
-                orderProducts.stream()
-                        .map(orderProduct -> new OrderProductDto(
-                                orderProduct.getProductId(),
-                                orderProduct.getProductNameValue(),
-                                orderProduct.getProductPriceValue(),
-                                orderProduct.getProductImageUrlValue(),
-                                orderProduct.getQuantityValue()
-                        )).collect(Collectors.toList())
-        );
     }
 }

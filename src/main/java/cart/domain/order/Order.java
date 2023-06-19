@@ -72,6 +72,14 @@ public class Order extends BaseTimeEntity {
         return new ProductPrice(totalPrice);
     }
 
+    public Integer getUsedPointValue() {
+        return usedPoint.getUsedPoint();
+    }
+
+    public Integer getDeliveryFeeValue() {
+        return deliveryFee.getDeliveryFee();
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

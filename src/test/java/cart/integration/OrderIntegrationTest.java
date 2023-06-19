@@ -1,8 +1,8 @@
 package cart.integration;
 
+import cart.application.dto.order.OrderRequest;
 import cart.domain.member.Member;
 import cart.repository.MemberRepository;
-import cart.ui.dto.order.OrderRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,8 +66,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .body("deliveryFee", is(0))
                 .body("usedPoint", is(1_000))
                 .body("products", hasSize(2))
-                .body("products[0].product.id", is(1))
-                .body("products[1].product.id", is(2));
+                .body("products[0].product.id", is(3))
+                .body("products[1].product.id", is(4));
     }
 
     @DisplayName("사용자가 주문한 모든 주문 내역을 확인할 수 있다.")

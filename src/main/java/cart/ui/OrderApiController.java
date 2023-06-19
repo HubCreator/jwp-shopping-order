@@ -1,9 +1,10 @@
 package cart.ui;
 
 import cart.application.OrderService;
+import cart.application.dto.order.OrderRequest;
 import cart.domain.member.Member;
+import cart.domain.order.Order;
 import cart.ui.dto.order.OrderDetailResponse;
-import cart.ui.dto.order.OrderRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -38,14 +40,17 @@ public class OrderApiController {
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderDetailResponse> orderDetail(Member member,
                                                            @PathVariable Long orderId) {
-        final OrderDetailResponse orderDetail = orderService.getOrderDetail(member, orderId);
-        return ResponseEntity.ok(orderDetail);
+        final Order order = orderService.getOrderDetail(member, orderId);
+        return ResponseEntity.ok(new OrderDetailResponse(order));
     }
 
     @GetMapping
     public ResponseEntity<List<OrderDetailResponse>> orderDetails(Member member) {
-        final List<OrderDetailResponse> orderDetails = orderService.getAllOrderDetails(member);
-        return ResponseEntity.ok(orderDetails);
+        final List<Order> orders = orderService.getAllOrderDetails(member);
+        final List<OrderDetailResponse> response = orders.stream()
+                .map(OrderDetailResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping

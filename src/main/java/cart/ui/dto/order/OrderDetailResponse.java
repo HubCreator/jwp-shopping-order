@@ -1,8 +1,6 @@
 package cart.ui.dto.order;
 
-import cart.domain.order.DeliveryFee;
 import cart.domain.order.Order;
-import cart.domain.order.UsedPoint;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -18,17 +16,7 @@ public class OrderDetailResponse {
     private final Integer usedPoint;
     private final Integer deliveryFee;
     private final LocalDateTime orderedAt;
-    private final List<OrderProductDto> products;
-
-    public OrderDetailResponse(final Long orderId, final Integer totalPrice, final UsedPoint usedPoint, final DeliveryFee deliveryFee,
-                               final LocalDateTime orderedAt, final List<OrderProductDto> orderProductDtos) {
-        this.orderId = orderId;
-        this.totalPrice = totalPrice;
-        this.usedPoint = usedPoint.getUsedPoint();
-        this.deliveryFee = deliveryFee.getDeliveryFee();
-        this.orderedAt = orderedAt;
-        this.products = orderProductDtos;
-    }
+    private final List<OrderProductResponse> products;
 
     public OrderDetailResponse(final Order order) {
         this.orderId = order.getId();
@@ -37,7 +25,20 @@ public class OrderDetailResponse {
         this.deliveryFee = order.getDeliveryFee().getDeliveryFee();
         this.orderedAt = order.getCreatedDate();
         this.products = order.getOrderProducts().stream()
-                .map(OrderProductDto::new)
+                .map(OrderProductResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public OrderDetailResponse(final OrderAndOrderProductsDto dto) {
+        this.orderId = dto.getOrder().getId();
+        this.totalPrice = dto.getOrderProducts().stream()
+                .mapToInt(orderProduct -> orderProduct.getProductPriceValue() * orderProduct.getQuantityValue())
+                .sum();
+        this.usedPoint = dto.getOrder().getUsedPointValue();
+        this.deliveryFee = dto.getOrder().getDeliveryFeeValue();
+        this.orderedAt = dto.getOrder().getCreatedDate();
+        this.products = dto.getOrderProducts().stream()
+                .map(OrderProductResponse::new)
                 .collect(Collectors.toList());
     }
 

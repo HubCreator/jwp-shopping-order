@@ -1,11 +1,11 @@
 package cart.application;
 
+import cart.application.dto.product.ProductRequest;
 import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.repository.ProductRepository;
-import cart.ui.dto.product.ProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

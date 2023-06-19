@@ -1,12 +1,12 @@
 package cart.application;
 
+import cart.application.dto.cartitem.CartItemRequest;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
-import cart.ui.dto.cartitem.CartItemRequest;
-import cart.ui.dto.cartitem.CartItemsPriceResponse;
+import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,12 +60,12 @@ public class CartItemServiceTest {
         final List<Long> cartItemIds = List.of(1L, 2L, 3L);
 
         // when
-        final CartItemsPriceResponse response = cartItemService.getPaymentInfo(member, cartItemIds);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, cartItemIds);
 
         // then
         assertAll(
-                () -> assertThat(response.getTotalPrice()).isEqualTo(120_000),
-                () -> assertThat(response.getDeliveryFee()).isEqualTo(0)
+                () -> assertThat(resultDto.getTotalPrice()).isEqualTo(120_000),
+                () -> assertThat(resultDto.getDeliveryFee()).isEqualTo(0)
         );
     }
 
@@ -76,12 +76,12 @@ public class CartItemServiceTest {
         final List<Long> cartItemIds = List.of(1L);
 
         // when
-        final CartItemsPriceResponse response = cartItemService.getPaymentInfo(member, cartItemIds);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, cartItemIds);
 
         // then
         assertAll(
-                () -> assertThat(response.getTotalPrice()).isEqualTo(20_000),
-                () -> assertThat(response.getDeliveryFee()).isEqualTo(3000)
+                () -> assertThat(resultDto.getTotalPrice()).isEqualTo(20_000),
+                () -> assertThat(resultDto.getDeliveryFee()).isEqualTo(3000)
         );
     }
 }

@@ -22,7 +22,6 @@ public class MemberApiController {
     @GetMapping("/point")
     public ResponseEntity<PointResponse> getPoint(Member member) {
         final MemberPoint point = memberService.getPoint(member);
-        final PointResponse pointResponse = new PointResponse(point.getPoint());
-        return ResponseEntity.ok(pointResponse);
+        return ResponseEntity.ok(new PointResponse(point.getPoint()));
     }
 }

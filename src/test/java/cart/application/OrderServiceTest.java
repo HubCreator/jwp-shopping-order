@@ -1,5 +1,6 @@
 package cart.application;
 
+import cart.application.dto.order.OrderRequest;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
@@ -18,8 +19,6 @@ import cart.repository.MemberRepository;
 import cart.repository.OrderProductRepository;
 import cart.repository.OrderRepository;
 import cart.repository.ProductRepository;
-import cart.ui.dto.order.OrderDetailResponse;
-import cart.ui.dto.order.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -240,9 +239,9 @@ public class OrderServiceTest {
 
             // when
             orderService.deleteByIds(member, List.of(orderId1, orderId2));
-            final List<OrderDetailResponse> responses = orderService.getAllOrderDetails(member);
-            final List<Long> orderIds = responses.stream()
-                    .map(OrderDetailResponse::getOrderId)
+            final List<Order> orders = orderService.getAllOrderDetails(member);
+            final List<Long> orderIds = orders.stream()
+                    .map(Order::getId)
                     .collect(Collectors.toList());
 
             // then
@@ -264,10 +263,10 @@ public class OrderServiceTest {
 
             // when
             orderService.deleteAll(member);
-            final List<OrderDetailResponse> responses = orderService.getAllOrderDetails(member);
+            final List<Order> orders = orderService.getAllOrderDetails(member);
 
             // then
-            assertThat(responses).hasSize(0);
+            assertThat(orders).hasSize(0);
         }
     }
 }
