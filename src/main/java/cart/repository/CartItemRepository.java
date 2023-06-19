@@ -2,6 +2,7 @@ package cart.repository;
 
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
+import cart.domain.member.Member;
 import cart.exception.notfound.CartItemNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -28,14 +29,19 @@ public class CartItemRepository {
         return cartItem;
     }
 
-    public List<CartItem> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select c from CartItem c join c.member m where m.id = :memberId", CartItem.class)
-                .setParameter("memberId", memberId)
+    public List<CartItem> findAllByMember(final Member member) {
+        return em.createQuery("select c from CartItem c " +
+                        "join c.member m " +
+                        "join fetch c.product p " +
+                        "where m.id = :memberId", CartItem.class)
+                .setParameter("memberId", member.getId())
                 .getResultList();
     }
 
     public List<CartItem> findAllByIds(final List<Long> ids) {
-        return em.createQuery("select c from CartItem c where c.id in :ids", CartItem.class)
+        return em.createQuery("select c from CartItem c " +
+                        "join fetch c.member m " +
+                        "where c.id in :ids", CartItem.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }

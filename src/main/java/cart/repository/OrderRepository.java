@@ -40,14 +40,17 @@ public class OrderRepository {
     }
 
     public List<Order> findAllByOrderIds(final List<Long> ids) {
-        return em.createQuery("select distinct o from Order o join fetch o.orderProducts where o.id in :ids", Order.class)
-//        return em.createQuery("select o from OrderProduct op join fetch op.order o where o.id in :ids", Order.class)
+        return em.createQuery("select o from Order o " +
+                        "join fetch o.member m " +
+                        "where o.id in :ids", Order.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }
 
     public List<Order> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select o from Order o join o.member m where m.id = :memberId", Order.class)
+        return em.createQuery("select o from Order o " +
+                        "join fetch o.member m " +
+                        "where m.id = :memberId", Order.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }

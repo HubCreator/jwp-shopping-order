@@ -46,7 +46,7 @@ public class CartItemServiceTest {
         // when
         cartItemService.addCartItem(member, cartItemRequest);
         final CartItem cartItem = cartItemRepository.findOne(1L);
-        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
+        final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
 
         // then
         assertThat(cartItem.getQuantity()).isEqualTo(new Quantity(3));

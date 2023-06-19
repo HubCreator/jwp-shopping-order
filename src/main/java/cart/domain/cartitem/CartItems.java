@@ -33,11 +33,6 @@ public class CartItems {
         this.savedPoint = calculateSavedPoint();
     }
 
-    private SavedPoint calculateSavedPoint() {
-        final ProductPrice appliedSalePrice = totalPrice.applySale(SALE_RATE);
-        return new SavedPoint(appliedSalePrice.getPrice());
-    }
-
     private ProductPrice calculateTotalPrice(final List<CartItem> cartItems) {
         final int totalPrice = cartItems.stream()
                 .mapToInt(cartitem -> cartitem.getProductPrice() * cartitem.getQuantityValue())
@@ -50,6 +45,11 @@ public class CartItems {
             return DeliveryFee.none();
         }
         return DELIVERY_FEE;
+    }
+
+    private SavedPoint calculateSavedPoint() {
+        final ProductPrice appliedSalePrice = totalPrice.applySale(SALE_RATE);
+        return new SavedPoint(appliedSalePrice.getPrice());
     }
 
     public void checkOwner(final Member member) {

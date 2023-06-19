@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,12 +62,9 @@ public class OrderService {
     public List<OrderDetailResponse> getAllOrderDetails(final Member member) {
         final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
         orders.forEach(order -> order.checkOwner(member));
-        final List<OrderDetailResponse> result = new ArrayList<>();
-        for (Order order : orders) {
-            final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderId(order.getId());
-            result.add(getOrderDetailResponse(order, orderProducts));
-        }
-        return result;
+        return orders.stream()
+                .map(OrderDetailResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional

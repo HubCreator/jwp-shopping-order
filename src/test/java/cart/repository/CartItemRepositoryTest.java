@@ -55,7 +55,8 @@ class CartItemRepositoryTest {
     @Test
     void findAllByMemberId() {
         // given
-        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(1L);
+        final Member member = memberRepository.findOne(1L);
+        final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
 
         // when, then
         assertThat(cartItems).hasSize(6);

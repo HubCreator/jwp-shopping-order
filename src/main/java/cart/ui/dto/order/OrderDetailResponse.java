@@ -1,12 +1,16 @@
 package cart.ui.dto.order;
 
 import cart.domain.order.DeliveryFee;
+import cart.domain.order.Order;
 import cart.domain.order.UsedPoint;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Getter
 public class OrderDetailResponse {
 
     private final Long orderId;
@@ -26,28 +30,19 @@ public class OrderDetailResponse {
         this.products = orderProductDtos;
     }
 
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public Integer getTotalPrice() {
-        return totalPrice;
-    }
-
-    public Integer getUsedPoint() {
-        return usedPoint;
-    }
-
-    public Integer getDeliveryFee() {
-        return deliveryFee;
+    public OrderDetailResponse(final Order order) {
+        this.orderId = order.getId();
+        this.totalPrice = order.getTotalPrice().getPrice();
+        this.usedPoint = order.getUsedPoint().getUsedPoint();
+        this.deliveryFee = order.getDeliveryFee().getDeliveryFee();
+        this.orderedAt = order.getCreatedDate();
+        this.products = order.getOrderProducts().stream()
+                .map(OrderProductDto::new)
+                .collect(Collectors.toList());
     }
 
     public String getOrderedAt() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         return orderedAt.format(formatter);
-    }
-
-    public List<OrderProductDto> getProducts() {
-        return products;
     }
 }

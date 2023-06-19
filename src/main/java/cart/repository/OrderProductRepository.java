@@ -14,13 +14,17 @@ public class OrderProductRepository {
     private final EntityManager em;
 
     public List<OrderProduct> findAllByMemberId(final Long memberId) {
-        return em.createQuery("select op from OrderProduct op join op.order o where o.member.id = :memberId", OrderProduct.class)
+        return em.createQuery("select op from OrderProduct op " +
+                        "join fetch op.order o " +
+                        "where o.member.id = :memberId", OrderProduct.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
     public List<OrderProduct> findAllByOrderId(final Long orderId) {
-        return em.createQuery("select op from OrderProduct op join op.order o where o.id = :orderId", OrderProduct.class)
+        return em.createQuery("select op from OrderProduct op " +
+                        "join fetch op.order o " +
+                        "where o.id = :orderId", OrderProduct.class)
                 .setParameter("orderId", orderId)
                 .getResultList();
     }

@@ -4,12 +4,20 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.member.MemberPoint;
-import cart.domain.order.*;
+import cart.domain.order.DeliveryFee;
+import cart.domain.order.Order;
+import cart.domain.order.OrderProduct;
+import cart.domain.order.SavedPoint;
+import cart.domain.order.UsedPoint;
 import cart.domain.product.Product;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
-import cart.repository.*;
+import cart.repository.CartItemRepository;
+import cart.repository.MemberRepository;
+import cart.repository.OrderProductRepository;
+import cart.repository.OrderRepository;
+import cart.repository.ProductRepository;
 import cart.ui.dto.order.OrderDetailResponse;
 import cart.ui.dto.order.OrderRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,7 +183,7 @@ public class OrderServiceTest {
                 final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), 0);
                 final Long orderId = orderService.order(member, orderRequest);
 
-                final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
+                final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
 
                 // when, then
                 assertThat(cartItems).doesNotContain(

@@ -26,14 +26,10 @@ public class CartItemService {
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
 
-    public List<CartItem> getCartItemsByMember(final Member member) {
-        return cartItemRepository.findAllByMemberId(member.getId());
-    }
-
     @Transactional
     public Long addCartItem(final Member member, final CartItemRequest request) {
         final Product product = productRepository.findOne(request.getProductId());
-        final CartItems cartItems = new CartItems(cartItemRepository.findAllByMemberId(member.getId()));
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllByMember(member));
         final Optional<CartItem> cartItemOptional = cartItems.findProduct(product);
         if (cartItemOptional.isEmpty()) {
             final CartItem cartItem = new CartItem(member, product);
@@ -46,6 +42,10 @@ public class CartItemService {
         cartItemRepository.updateQuantity(cartItem, addedQuantity);
 
         return cartItem.getId();
+    }
+
+    public List<CartItem> getCartItemsByMember(final Member member) {
+        return cartItemRepository.findAllByMember(member);
     }
 
     @Transactional
@@ -68,15 +68,14 @@ public class CartItemService {
 
     @Transactional
     public void removeCartItems(final Member member, final CartItemIdsRequest request) {
-        final List<CartItem> cartItems = cartItemRepository.findAllByIds(request.getCartItemIds());
-        cartItems.forEach(cartItem -> cartItem.checkOwner(member));
-        cartItemRepository.deleteAll(cartItems);
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllByIds(request.getCartItemIds()));
+        cartItems.checkOwner(member);
+        cartItemRepository.deleteAll(cartItems.getCartItems());
     }
 
     public CartItemsPriceResponse getPaymentInfo(final Member member, final List<Long> cartItemIds) {
         final CartItems cartItems = new CartItems(cartItemRepository.findAllByIds(cartItemIds));
         cartItems.checkOwner(member);
-
         return new CartItemsPriceResponse(cartItems.getTotalPrice(), cartItems.getDeliveryFee());
     }
 }

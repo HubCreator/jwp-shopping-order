@@ -66,10 +66,6 @@ public class CartItem extends BaseTimeEntity {
         this.quantity = quantity;
     }
 
-    public Long getMemberId() {
-        return member.getId();
-    }
-
     public Long getProductId() {
         return product.getId();
     }
