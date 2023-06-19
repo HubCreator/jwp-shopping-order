@@ -7,7 +7,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
@@ -44,10 +48,6 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.password = password;
         this.point = point;
-    }
-
-    public boolean checkPassword(final MemberPassword password) {
-        return this.password.equals(password);
     }
 
     public void updatePoint(final MemberPoint requestedPoint, final ProductPrice productTotalPrice) {

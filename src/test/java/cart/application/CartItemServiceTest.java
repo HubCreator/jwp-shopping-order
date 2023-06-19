@@ -1,9 +1,12 @@
 package cart.application;
 
 import cart.application.dto.cartitem.CartItemRequest;
+import cart.domain.auth.Auth;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
+import cart.domain.member.MemberEmail;
+import cart.repository.AuthRepository;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
 import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
@@ -24,17 +27,19 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class CartItemServiceTest {
 
     @Autowired
-    private CartItemService cartItemService;
+    private AuthRepository authRepository;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
+    private CartItemService cartItemService;
+    @Autowired
     private CartItemRepository cartItemRepository;
 
-    private Member member;
+    private Auth auth;
 
     @BeforeEach
     void setUp() {
-        member = memberRepository.findOne(1L);
+        auth = authRepository.findByEmail(new MemberEmail("a@a.com"));
     }
 
     @DisplayName("장바구니에 상품을 추가할 때, 이미 해당 상품이 존재하면 수량만 하나 추가한다.")
@@ -42,9 +47,10 @@ public class CartItemServiceTest {
     void addCartItem() {
         // given
         final CartItemRequest cartItemRequest = new CartItemRequest(1L);
+        final Member member = memberRepository.findByEmail(auth.getEmail());
 
         // when
-        cartItemService.addCartItem(member, cartItemRequest);
+        cartItemService.addCartItem(auth, cartItemRequest);
         final CartItem cartItem = cartItemRepository.findOne(1L);
         final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
 
@@ -60,7 +66,7 @@ public class CartItemServiceTest {
         final List<Long> cartItemIds = List.of(1L, 2L, 3L);
 
         // when
-        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, cartItemIds);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(auth, cartItemIds);
 
         // then
         assertAll(
@@ -76,7 +82,7 @@ public class CartItemServiceTest {
         final List<Long> cartItemIds = List.of(1L);
 
         // when
-        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, cartItemIds);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(auth, cartItemIds);
 
         // then
         assertAll(

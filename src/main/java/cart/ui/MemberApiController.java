@@ -1,7 +1,7 @@
 package cart.ui;
 
 import cart.application.MemberService;
-import cart.domain.member.Member;
+import cart.domain.auth.Auth;
 import cart.domain.member.MemberPoint;
 import cart.ui.dto.order.PointResponse;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class MemberApiController {
     }
 
     @GetMapping("/point")
-    public ResponseEntity<PointResponse> getPoint(Member member) {
-        final MemberPoint point = memberService.getPoint(member);
+    public ResponseEntity<PointResponse> getPoint(final Auth auth) {
+        final MemberPoint point = memberService.getPoint(auth);
         return ResponseEntity.ok(new PointResponse(point.getPoint()));
     }
 }

@@ -4,7 +4,7 @@ import cart.application.CartItemService;
 import cart.application.dto.cartitem.CartItemIdsRequest;
 import cart.application.dto.cartitem.CartItemQuantityUpdateRequest;
 import cart.application.dto.cartitem.CartItemRequest;
-import cart.domain.member.Member;
+import cart.domain.auth.Auth;
 import cart.ui.dto.cartitem.CartItemResponse;
 import cart.ui.dto.cartitem.CartItemsPriceResponse;
 import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
@@ -35,15 +35,15 @@ public class CartItemApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addCartItems(Member member,
+    public ResponseEntity<Void> addCartItems(final Auth auth,
                                              @Valid @RequestBody CartItemRequest request) {
-        final Long cartItemId = cartItemService.addCartItem(member, request);
+        final Long cartItemId = cartItemService.addCartItem(auth, request);
         return ResponseEntity.created(URI.create("/cart-items/" + cartItemId)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemResponse>> showCartItems(Member member) {
-        final List<CartItemResponse> cartItemResponses = cartItemService.getCartItemsByMember(member)
+    public ResponseEntity<List<CartItemResponse>> showCartItems(final Auth auth) {
+        final List<CartItemResponse> cartItemResponses = cartItemService.getCartItemsByMember(auth)
                 .stream()
                 .map(CartItemResponse::new)
                 .collect(Collectors.toList());
@@ -51,31 +51,31 @@ public class CartItemApiController {
     }
 
     @PatchMapping("/{cartItemId}")
-    public ResponseEntity<Void> updateCartItemQuantity(Member member,
+    public ResponseEntity<Void> updateCartItemQuantity(final Auth auth,
                                                        @PathVariable Long cartItemId,
                                                        @Valid @RequestBody CartItemQuantityUpdateRequest request) {
-        cartItemService.updateQuantity(member, cartItemId, request);
+        cartItemService.updateQuantity(auth, cartItemId, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{cartItemId}")
-    public ResponseEntity<Void> removeCartItem(Member member,
+    public ResponseEntity<Void> removeCartItem(final Auth auth,
                                                @PathVariable Long cartItemId) {
-        cartItemService.removeCartItem(member, cartItemId);
+        cartItemService.removeCartItem(auth, cartItemId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> removeCartItems(Member member,
+    public ResponseEntity<Void> removeCartItems(final Auth auth,
                                                 @Valid @RequestBody CartItemIdsRequest request) {
-        cartItemService.removeCartItems(member, request);
+        cartItemService.removeCartItems(auth, request);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/price")
-    public ResponseEntity<CartItemsPriceResponse> getCartItemsPrice(Member member,
+    public ResponseEntity<CartItemsPriceResponse> getCartItemsPrice(final Auth auth,
                                                                     @RequestParam List<Long> item) {
-        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(member, item);
+        final TotalPriceAndDeliveryFeeDto resultDto = cartItemService.getPaymentInfo(auth, item);
         return ResponseEntity.ok(new CartItemsPriceResponse(resultDto));
     }
 }

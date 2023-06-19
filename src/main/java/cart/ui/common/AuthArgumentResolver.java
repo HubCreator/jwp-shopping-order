@@ -1,11 +1,12 @@
 package cart.ui.common;
 
-import cart.domain.member.Member;
+import cart.domain.auth.Auth;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
 import cart.exception.authentication.InvalidFormatException;
 import cart.exception.authentication.PasswordNotMatchException;
-import cart.repository.MemberRepository;
+import cart.repository.AuthRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -14,17 +15,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
+@RequiredArgsConstructor
+public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
-
-    public MemberArgumentResolver(final MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final AuthRepository authRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(Auth.class);
     }
 
     @Override
@@ -52,10 +50,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         String password = credentials[1];
 
         // 본인 여부 확인
-        Member member = memberRepository.findByEmail(new MemberEmail(email));
-        if (!member.checkPassword(new MemberPassword(password))) {
+        Auth auth = authRepository.findByEmail(new MemberEmail(email));
+        if (!auth.checkPassword(new MemberPassword(password))) {
             throw new PasswordNotMatchException();
         }
-        return member;
+        return auth;
     }
 }

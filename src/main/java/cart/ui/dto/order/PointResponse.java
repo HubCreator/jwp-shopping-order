@@ -1,14 +1,15 @@
 package cart.ui.dto.order;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class PointResponse {
 
-    private final int point;
+    private int point;
 
     public PointResponse(final int point) {
         this.point = point;
-    }
-
-    public int getPoint() {
-        return point;
     }
 }

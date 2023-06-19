@@ -2,7 +2,7 @@ package cart.ui;
 
 import cart.application.OrderService;
 import cart.application.dto.order.OrderRequest;
-import cart.domain.member.Member;
+import cart.domain.auth.Auth;
 import cart.domain.order.Order;
 import cart.ui.dto.order.OrderDetailResponse;
 import org.springframework.http.ResponseEntity;
@@ -31,22 +31,22 @@ public class OrderApiController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> order(Member member,
+    public ResponseEntity<Void> order(final Auth auth,
                                       @Valid @RequestBody OrderRequest request) {
-        final Long orderId = orderService.order(member, request);
+        final Long orderId = orderService.order(auth, request);
         return ResponseEntity.created(URI.create("/orders/" + orderId)).build();
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDetailResponse> orderDetail(Member member,
+    public ResponseEntity<OrderDetailResponse> orderDetail(final Auth auth,
                                                            @PathVariable Long orderId) {
-        final Order order = orderService.getOrderDetail(member, orderId);
+        final Order order = orderService.getOrderDetail(auth, orderId);
         return ResponseEntity.ok(new OrderDetailResponse(order));
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDetailResponse>> orderDetails(Member member) {
-        final List<Order> orders = orderService.getAllOrderDetails(member);
+    public ResponseEntity<List<OrderDetailResponse>> orderDetails(final Auth auth) {
+        final List<Order> orders = orderService.getAllOrderDetails(auth);
         final List<OrderDetailResponse> response = orders.stream()
                 .map(OrderDetailResponse::new)
                 .collect(Collectors.toList());
@@ -54,15 +54,15 @@ public class OrderApiController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteByIds(Member member,
+    public ResponseEntity<Void> deleteByIds(final Auth auth,
                                             @RequestParam List<Long> orderId) {
-        orderService.deleteByIds(member, orderId);
+        orderService.deleteByIds(auth, orderId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/all")
-    public ResponseEntity<Void> deleteAll(Member member) {
-        orderService.deleteAll(member);
+    public ResponseEntity<Void> deleteAll(final Auth auth) {
+        orderService.deleteAll(auth);
         return ResponseEntity.noContent().build();
     }
 }

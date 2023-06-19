@@ -1,9 +1,11 @@
 package cart.application;
 
 import cart.application.dto.order.OrderRequest;
+import cart.domain.auth.Auth;
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
+import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPoint;
 import cart.domain.order.DeliveryFee;
 import cart.domain.order.Order;
@@ -14,6 +16,7 @@ import cart.domain.product.Product;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
+import cart.repository.AuthRepository;
 import cart.repository.CartItemRepository;
 import cart.repository.MemberRepository;
 import cart.repository.OrderProductRepository;
@@ -42,9 +45,11 @@ public class OrderServiceTest {
     @Autowired
     private EntityManager em;
     @Autowired
-    private OrderService orderService;
+    private AuthRepository authRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -58,13 +63,15 @@ public class OrderServiceTest {
     @DisplayName("상품을 주문할 때에는")
     class DescribeOrderMethodTest1 {
 
+        private Auth auth;
         private Member member;
         private Product product1;
         private Product product2;
 
         @BeforeEach
         void setUp() {
-            member = memberRepository.findOne(1L);
+            auth = authRepository.findByEmail(new MemberEmail("a@a.com"));
+            member = memberRepository.findByEmail(auth.getEmail());
             product1 = productRepository.findOne(1L);
             product2 = productRepository.findOne(2L);
         }
@@ -85,7 +92,7 @@ public class OrderServiceTest {
                 cartItemRepository.save(cartItem2);
 
                 final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), usedPoint);
-                final Long orderId = orderService.order(member, orderRequest);
+                final Long orderId = orderService.order(auth, orderRequest);
                 order = orderRepository.findOne(orderId);
             }
 
@@ -119,7 +126,7 @@ public class OrderServiceTest {
                 final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
                 final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
                 final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
-                final Long orderId = orderService.order(member, orderRequest);
+                final Long orderId = orderService.order(auth, orderRequest);
                 order = em.find(Order.class, orderId);
             }
 
@@ -180,7 +187,7 @@ public class OrderServiceTest {
                 cartItemRepository.save(cartItem2);
 
                 final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), 0);
-                final Long orderId = orderService.order(member, orderRequest);
+                final Long orderId = orderService.order(auth, orderRequest);
 
                 final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
 
@@ -201,7 +208,7 @@ public class OrderServiceTest {
             void pointTest1() {
                 // given
                 final OrderRequest orderRequest = new OrderRequest(List.of(6L), 3500);
-                final Long orderId = orderService.order(member, orderRequest);
+                final Long orderId = orderService.order(auth, orderRequest);
 
                 // when
                 final Order order = orderRepository.findOne(orderId);
@@ -221,7 +228,7 @@ public class OrderServiceTest {
                 final OrderRequest orderRequest = new OrderRequest(List.of(6L), 3501);
 
                 // when, then
-                assertThatThrownBy(() -> orderService.order(member, orderRequest))
+                assertThatThrownBy(() -> orderService.order(auth, orderRequest))
                         .isInstanceOf(InvalidPointUseException.class);
             }
         }
@@ -233,13 +240,13 @@ public class OrderServiceTest {
             final OrderRequest orderRequest1 = new OrderRequest(List.of(1L), 0);
             final OrderRequest orderRequest2 = new OrderRequest(List.of(2L), 0);
             final OrderRequest orderRequest3 = new OrderRequest(List.of(3L), 0);
-            final Long orderId1 = orderService.order(member, orderRequest1);
-            final Long orderId2 = orderService.order(member, orderRequest2);
-            final Long orderId3 = orderService.order(member, orderRequest3);
+            final Long orderId1 = orderService.order(auth, orderRequest1);
+            final Long orderId2 = orderService.order(auth, orderRequest2);
+            final Long orderId3 = orderService.order(auth, orderRequest3);
 
             // when
-            orderService.deleteByIds(member, List.of(orderId1, orderId2));
-            final List<Order> orders = orderService.getAllOrderDetails(member);
+            orderService.deleteByIds(auth, List.of(orderId1, orderId2));
+            final List<Order> orders = orderService.getAllOrderDetails(auth);
             final List<Long> orderIds = orders.stream()
                     .map(Order::getId)
                     .collect(Collectors.toList());
@@ -257,13 +264,13 @@ public class OrderServiceTest {
             final OrderRequest orderRequest1 = new OrderRequest(List.of(1L), 0);
             final OrderRequest orderRequest2 = new OrderRequest(List.of(2L), 0);
             final OrderRequest orderRequest3 = new OrderRequest(List.of(3L), 0);
-            final Long orderId1 = orderService.order(member, orderRequest1);
-            final Long orderId2 = orderService.order(member, orderRequest2);
-            final Long orderId3 = orderService.order(member, orderRequest3);
+            final Long orderId1 = orderService.order(auth, orderRequest1);
+            final Long orderId2 = orderService.order(auth, orderRequest2);
+            final Long orderId3 = orderService.order(auth, orderRequest3);
 
             // when
-            orderService.deleteAll(member);
-            final List<Order> orders = orderService.getAllOrderDetails(member);
+            orderService.deleteAll(auth);
+            final List<Order> orders = orderService.getAllOrderDetails(auth);
 
             // then
             assertThat(orders).hasSize(0);

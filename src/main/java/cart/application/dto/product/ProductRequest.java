@@ -1,9 +1,14 @@
 package cart.application.dto.product;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
+@Data
+@NoArgsConstructor
 public class ProductRequest {
 
     @NotEmpty
@@ -14,24 +19,9 @@ public class ProductRequest {
     @NotEmpty
     private String imageUrl;
 
-    public ProductRequest() {
-    }
-
     public ProductRequest(String name, int price, String imageUrl) {
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
     }
 }
