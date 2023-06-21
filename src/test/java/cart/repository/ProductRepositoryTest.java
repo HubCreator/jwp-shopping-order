@@ -4,7 +4,7 @@ import cart.domain.product.Product;
 import cart.domain.product.ProductImageUrl;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
-import cart.exception.notfound.ProductNotFoundException;
+import cart.repository.datajpa.ProductDataJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ProductRepositoryTest {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDataJpaRepository productDataJpaRepository;
 
     @DisplayName("상품을 저장하고 조회할 수 있다.")
     @Test
@@ -33,11 +32,11 @@ class ProductRepositoryTest {
                 new ProductPrice(30_000),
                 new ProductImageUrl("신제품Url")
         );
-        productRepository.save(product);
+        productDataJpaRepository.save(product);
 
         // when
         assertThat(product.getId()).isNotNull();
-        final Product findProduct = productRepository.findOne(product.getId());
+        final Product findProduct = productDataJpaRepository.findById(product.getId()).orElseThrow();
 
         // then
         assertThat(findProduct).isSameAs(product);
@@ -47,7 +46,7 @@ class ProductRepositoryTest {
     @Test
     void findAll() {
         // given
-        final List<Product> products = productRepository.findAll();
+        final List<Product> products = productDataJpaRepository.findAll();
 
         // when
         assertThat(products).hasSize(5);
@@ -58,7 +57,7 @@ class ProductRepositoryTest {
     void findAllByIds() {
         // given
         final List<Long> ids = List.of(1L, 2L, 3L);
-        final List<Product> products = productRepository.findAllByIds(ids);
+        final List<Product> products = productDataJpaRepository.findAllById(ids);
 
         // when, then
         assertAll(
@@ -73,7 +72,7 @@ class ProductRepositoryTest {
     @Test
     void updateProduct() {
         // given
-        final Product product = productRepository.findOne(1L);
+        final Product product = productDataJpaRepository.findById(1L).orElseThrow();
         final Product newProduct = new Product(
                 new ProductName("바뀐상품"),
                 new ProductPrice(111),
@@ -84,7 +83,7 @@ class ProductRepositoryTest {
 //        em.clear();
 
         // when
-        final Product updatedProduct = productRepository.findOne(1L);
+        final Product updatedProduct = productDataJpaRepository.findById(1L).orElseThrow();
 
         // then
         assertAll(
@@ -99,10 +98,9 @@ class ProductRepositoryTest {
     @Test
     void delete() {
         // given
-        productRepository.deleteById(1L);
+        productDataJpaRepository.deleteById(1L);
 
         // when, then
-        assertThatThrownBy(() -> productRepository.findOne(1L))
-                .isInstanceOf(ProductNotFoundException.class);
+        assertThat(productDataJpaRepository.findById(1L)).isEmpty();
     }
 }
