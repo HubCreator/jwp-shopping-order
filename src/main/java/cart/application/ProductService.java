@@ -31,8 +31,7 @@ public class ProductService {
     }
 
     public Product getProductById(final Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+        return getProduct(productId);
     }
 
     public List<Product> getAllProducts() {
@@ -41,8 +40,7 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(final Long productId, final ProductRequest request) {
-        final Product findProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+        final Product findProduct = getProduct(productId);
         final Product updatedProduct = new Product(
                 productId,
                 new ProductName(request.getName()),
@@ -53,8 +51,12 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(final Long productId) {
-        final Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+        final Product product = getProduct(productId);
         productRepository.delete(product);
+    }
+
+    private Product getProduct(final Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

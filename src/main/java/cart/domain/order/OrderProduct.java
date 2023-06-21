@@ -70,6 +70,10 @@ public class OrderProduct extends BaseTimeEntity {
         return quantity.getQuantity();
     }
 
+    public void setOrder(final Order order) {
+        this.order = order;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

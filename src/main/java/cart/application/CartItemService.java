@@ -28,22 +28,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CartItemService {
 
-    private final MemberDataJpaRepository memberDataJpaRepository;
-    private final ProductDataJpaRepository productDataJpaRepository;
-    private final CartItemDataJpaRepository cartItemDataJpaRepository;
+    private final MemberDataJpaRepository memberRepository;
+    private final ProductDataJpaRepository productRepository;
+    private final CartItemDataJpaRepository cartItemRepository;
 
     @Transactional
     public Long addCartItem(final Auth auth, final CartItemRequest request) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final Product product = productDataJpaRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException(request.getProductId()));
-
-        final CartItems cartItems = new CartItems(cartItemDataJpaRepository.findAllByMemberId(member.getId()));
+        final Member member = getMember(auth);
+        final Product product = getProduct(request);
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllByMemberId(member.getId()));
         final Optional<CartItem> cartItemOptional = cartItems.findProduct(product);
         if (cartItemOptional.isEmpty()) {
             final CartItem cartItem = new CartItem(member, product);
-            cartItemDataJpaRepository.save(cartItem);
+            cartItemRepository.save(cartItem);
             return cartItem.getId();
         }
         final CartItem cartItem = cartItemOptional.get();
@@ -54,20 +51,17 @@ public class CartItemService {
     }
 
     public List<CartItem> getCartItemsByMember(final Auth auth) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        return cartItemDataJpaRepository.findAllByMemberId(member.getId());
+        final Member member = getMember(auth);
+        return cartItemRepository.findAllByMemberId(member.getId());
     }
 
     @Transactional
     public void updateQuantity(final Auth auth, final Long cartItemId, final CartItemQuantityUpdateRequest request) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final CartItem cartItem = cartItemDataJpaRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+        final Member member = getMember(auth);
+        final CartItem cartItem = getCartItem(cartItemId);
         cartItem.checkOwner(member);
         if (request.getQuantity() == 0) {
-            cartItemDataJpaRepository.delete(cartItem);
+            cartItemRepository.delete(cartItem);
             return;
         }
         cartItem.updateQuantity(new Quantity(request.getQuantity()));
@@ -75,28 +69,39 @@ public class CartItemService {
 
     @Transactional
     public void removeCartItem(final Auth auth, final Long cartItemId) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final CartItem cartItem = cartItemDataJpaRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+        final Member member = getMember(auth);
+        final CartItem cartItem = getCartItem(cartItemId);
         cartItem.checkOwner(member);
-        cartItemDataJpaRepository.delete(cartItem);
+        cartItemRepository.delete(cartItem);
     }
 
     @Transactional
     public void removeCartItems(final Auth auth, final CartItemIdsRequest request) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final CartItems cartItems = new CartItems(cartItemDataJpaRepository.findAllById(request.getCartItemIds()));
+        final Member member = getMember(auth);
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllById(request.getCartItemIds()));
         cartItems.checkOwner(member);
-        cartItemDataJpaRepository.deleteAll(cartItems.getCartItems());
+        cartItemRepository.deleteAll(cartItems.getCartItems());
     }
 
     public TotalPriceAndDeliveryFeeDto getPaymentInfo(final Auth auth, final List<Long> cartItemIds) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final CartItems cartItems = new CartItems(cartItemDataJpaRepository.findAllById(cartItemIds));
+        final Member member = getMember(auth);
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllById(cartItemIds));
         cartItems.checkOwner(member);
         return new TotalPriceAndDeliveryFeeDto(cartItems.getTotalPrice(), cartItems.getDeliveryFee());
+    }
+
+    private Member getMember(final Auth auth) {
+        return memberRepository.findByEmail(auth.getEmail())
+                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
+    }
+
+    private Product getProduct(final CartItemRequest request) {
+        return productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException(request.getProductId()));
+    }
+
+    private CartItem getCartItem(final Long cartItemId) {
+        return cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
     }
 }

@@ -28,26 +28,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final MemberDataJpaRepository memberDataJpaRepository;
-    private final CartItemDataJpaRepository cartItemDataJpaRepository;
-    private final OrderDataJpaRepository orderDataJpaRepository;
-    private final ProductDataJpaRepository productDataJpaRepository;
+    private final MemberDataJpaRepository memberRepository;
+    private final CartItemDataJpaRepository cartItemRepository;
+    private final OrderDataJpaRepository orderRepository;
+    private final ProductDataJpaRepository productRepository;
 
     @Transactional
     public Long order(final Auth auth, final OrderRequest request) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final CartItems cartItems = new CartItems(cartItemDataJpaRepository.findAllById(request.getCartItemIds()));
+        final Member member = getMember(auth);
+        final CartItems cartItems = new CartItems(cartItemRepository.findAllById(request.getCartItemIds()));
         cartItems.checkOwner(member);
-        final ProductPrice totalPrice = cartItems.getTotalPrice();
-        validateInvalidPointUse(request, cartItems, totalPrice);
-        member.updatePoint(new MemberPoint(request.getPoint()), totalPrice);
-        final Order order = new Order(member, new UsedPoint(request.getPoint()), cartItems.getSavedPoint(), cartItems.getDeliveryFee());
-        final List<Product> products = productDataJpaRepository.findAllById(cartItems.getProductIds());
-        final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
-        order.updateOrderProduct(orderProducts);
-        orderDataJpaRepository.save(order);
-        cartItemDataJpaRepository.deleteAll(cartItems.getCartItems());
+        updateMemberPoint(request, member, cartItems);
+        final Order order = getOrder(request, member, cartItems);
+        cartItemRepository.deleteAll(cartItems.getCartItems());
         return order.getId();
     }
 
@@ -58,38 +51,54 @@ public class OrderService {
         }
     }
 
+    private void updateMemberPoint(final OrderRequest request, final Member member, final CartItems cartItems) {
+        final ProductPrice totalPrice = cartItems.getTotalPrice();
+        validateInvalidPointUse(request, cartItems, totalPrice);
+        member.updatePoint(new MemberPoint(request.getPoint()), totalPrice);
+    }
+
+    private Order getOrder(final OrderRequest request, final Member member, final CartItems cartItems) {
+        final Order order = new Order(member, new UsedPoint(request.getPoint()), cartItems.getSavedPoint(), cartItems.getDeliveryFee());
+        final List<Product> products = productRepository.findAllById(cartItems.getProductIds());
+        final List<OrderProduct> orderProducts = cartItems.toOrderProducts(order, products);
+        order.updateOrderProduct(orderProducts);
+        orderRepository.save(order);
+        return order;
+    }
+
     public Order getOrderDetail(final Auth auth, final Long orderId) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final Order order = orderDataJpaRepository.findByIdWithOrderItems(orderId)
+        final Member member = getMember(auth);
+        final Order order = orderRepository.findByIdWithOrderItems(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
         order.checkOwner(member);
         return order;
     }
 
     public List<Order> getAllOrderDetails(final Auth auth) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final List<Order> orders = orderDataJpaRepository.findAllByMemberId(member.getId());
+        final Member member = getMember(auth);
+        final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
         orders.forEach(order -> order.checkOwner(member));
         return orders;
     }
 
     @Transactional
     public void deleteByIds(final Auth auth, final List<Long> orderIds) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final List<Order> orders = orderDataJpaRepository.findAllById(orderIds);
+        final Member member = getMember(auth);
+        final List<Order> orders = orderRepository.findAllById(orderIds);
         orders.forEach(order -> order.checkOwner(member));
-        orderDataJpaRepository.deleteAll(orders);
+        orderRepository.deleteAll(orders);
     }
 
     @Transactional
     public void deleteAll(final Auth auth) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
-                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final List<Order> orders = orderDataJpaRepository.findAllByMemberId(member.getId());
+        final Member member = getMember(auth);
+        final List<Order> orders = orderRepository.findAllByMemberId(member.getId());
         orders.forEach(order -> order.checkOwner(member));
-        orderDataJpaRepository.deleteAll(orders);
+        orderRepository.deleteAll(orders);
+    }
+
+    private Member getMember(final Auth auth) {
+        return memberRepository.findByEmail(auth.getEmail())
+                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
     }
 }

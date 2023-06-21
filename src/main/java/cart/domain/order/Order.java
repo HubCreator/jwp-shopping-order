@@ -37,7 +37,7 @@ public class Order extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Embedded
@@ -63,6 +63,9 @@ public class Order extends BaseTimeEntity {
 
     public void updateOrderProduct(final List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
+        for (OrderProduct orderProduct : orderProducts) {
+            orderProduct.setOrder(this);
+        }
     }
 
     public ProductPrice getTotalPrice() {

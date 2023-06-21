@@ -74,12 +74,6 @@ public class CartItems {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getCartItemIds() {
-        return cartItems.stream()
-                .map(CartItem::getId)
-                .collect(Collectors.toList());
-    }
-
     public Optional<CartItem> findProduct(final Product product) {
         return cartItems.stream()
                 .filter(m -> m.getProduct().equals(product))
