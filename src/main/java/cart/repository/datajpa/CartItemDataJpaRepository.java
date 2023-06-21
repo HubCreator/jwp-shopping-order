@@ -7,8 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CartItemDataJpaRepository extends JpaRepository<CartItem, Long> {
+
+    @EntityGraph(attributePaths = {"product"})
+    @Override
+    Optional<CartItem> findById(final Long id);
 
     @Query("select c from CartItem c " +
             "join c.member m " +

@@ -79,7 +79,7 @@ public class OrderService {
     public void deleteByIds(final Auth auth, final List<Long> orderIds) {
         final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
-        final List<Order> orders = orderDataJpaRepository.findAllByOrderIds(orderIds);
+        final List<Order> orders = orderDataJpaRepository.findAllById(orderIds);
         orders.forEach(order -> order.checkOwner(member));
         orderDataJpaRepository.deleteAll(orders);
     }

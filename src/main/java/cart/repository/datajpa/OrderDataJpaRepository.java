@@ -1,6 +1,7 @@
 package cart.repository.datajpa;
 
 import cart.domain.order.Order;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,8 +22,10 @@ public interface OrderDataJpaRepository extends JpaRepository<Order, Long> {
             "where m.id = :memberId")
     List<Order> findAllByMemberId(@Param("memberId") final Long memberId);
 
-    @Query("select o from Order o " +
-            "join fetch o.member m " +
+    @EntityGraph(attributePaths = {"member", "orderProducts"})
+    @Query("select distinct o from Order o " +
             "where o.id in :ids")
-    List<Order> findAllByOrderIds(@Param("ids") final List<Long> ids);
+    @Override
+    List<Order> findAllById(@Param("ids") Iterable<Long> ids);
+
 }
