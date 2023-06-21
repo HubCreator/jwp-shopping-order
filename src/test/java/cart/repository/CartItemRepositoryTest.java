@@ -4,7 +4,9 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.product.Product;
-import cart.exception.notfound.CartItemNotFoundException;
+import cart.repository.datajpa.CartItemDataJpaRepository;
+import cart.repository.datajpa.MemberDataJpaRepository;
+import cart.repository.datajpa.ProductDataJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
@@ -22,25 +23,25 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class CartItemRepositoryTest {
 
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private MemberDataJpaRepository memberRepository;
     @Autowired
-    private MemberRepository memberRepository;
+    private CartItemDataJpaRepository cartItemRepository;
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDataJpaRepository productRepository;
 
 
     @DisplayName("장바구니 상품을 추가하고 조회할 수 있다.")
     @Test
     void saveAndFind() {
         // given
-        final Member member = memberRepository.findOne(2L);
-        final Product product = productRepository.findOne(4L);
+        final Member member = memberRepository.findById(2L).orElseThrow();
+        final Product product = productRepository.findById(4L).orElseThrow();
 
         final CartItem cartItem = new CartItem(member, product, new Quantity(3));
         cartItemRepository.save(cartItem);
 
         // when
-        final CartItem findCartItem = cartItemRepository.findOne(cartItem.getId());
+        final CartItem findCartItem = cartItemRepository.findById(cartItem.getId()).orElseThrow();
 
         // then
         assertAll(
@@ -55,8 +56,8 @@ class CartItemRepositoryTest {
     @Test
     void findAllByMemberId() {
         // given
-        final Member member = memberRepository.findOne(1L);
-        final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
+        final Member member = memberRepository.findById(1L).orElseThrow();
+        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
 
         // when, then
         assertThat(cartItems).hasSize(6);
@@ -66,7 +67,7 @@ class CartItemRepositoryTest {
     @Test
     void findAllByIds() {
         // given
-        final List<CartItem> cartItems = cartItemRepository.findAllByIds(List.of(1L, 2L, 3L));
+        final List<CartItem> cartItems = cartItemRepository.findAllById(List.of(1L, 2L, 3L));
 
         // when, then
         assertThat(cartItems).hasSize(3);
@@ -76,7 +77,7 @@ class CartItemRepositoryTest {
     @Test
     void updateQuantity() {
         // given
-        final CartItem cartItem = cartItemRepository.findOne(1L);
+        final CartItem cartItem = cartItemRepository.findById(1L).orElseThrow();
 
         // when
         cartItem.updateQuantity(new Quantity(10));
@@ -89,7 +90,7 @@ class CartItemRepositoryTest {
     @Test
     void addOneQuantity() {
         // given
-        final CartItem cartItem = cartItemRepository.findOne(1L);
+        final CartItem cartItem = cartItemRepository.findById(1L).orElseThrow();
         final Quantity quantity = cartItem.getQuantity();
 
         // when
@@ -104,21 +105,20 @@ class CartItemRepositoryTest {
     @Test
     void delete() {
         // given
-        final CartItem cartItem = cartItemRepository.findOne(1L);
+        final CartItem cartItem = cartItemRepository.findById(1L).orElseThrow();
         cartItemRepository.delete(cartItem);
 
         // when, then
-        assertThatThrownBy(() -> cartItemRepository.findOne(1L))
-                .isInstanceOf(CartItemNotFoundException.class);
+        assertThat(cartItemRepository.findById(1L)).isEmpty();
     }
 
     @DisplayName("특정 장바구니 상품들을 삭제할 수 있다.")
     @Test
     void deleteAll() {
         // given
-        final CartItem cartItem1 = cartItemRepository.findOne(1L);
-        final CartItem cartItem2 = cartItemRepository.findOne(2L);
-        final CartItem cartItem3 = cartItemRepository.findOne(3L);
+        final CartItem cartItem1 = cartItemRepository.findById(1L).orElseThrow();
+        final CartItem cartItem2 = cartItemRepository.findById(2L).orElseThrow();
+        final CartItem cartItem3 = cartItemRepository.findById(3L).orElseThrow();
         assertThat(cartItem1).isNotNull();
         assertThat(cartItem2).isNotNull();
         assertThat(cartItem3).isNotNull();
@@ -130,12 +130,9 @@ class CartItemRepositoryTest {
 
         // then
         assertAll(
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(1L))
-                        .isInstanceOf(CartItemNotFoundException.class),
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(2L))
-                        .isInstanceOf(CartItemNotFoundException.class),
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(3L))
-                        .isInstanceOf(CartItemNotFoundException.class)
+                () -> assertThat(cartItemRepository.findById(1L)).isEmpty(),
+                () -> assertThat(cartItemRepository.findById(2L)).isEmpty(),
+                () -> assertThat(cartItemRepository.findById(3L)).isEmpty()
         );
     }
 
@@ -143,9 +140,9 @@ class CartItemRepositoryTest {
     @Test
     void deleteByIds() {
         // given
-        final CartItem cartItem1 = cartItemRepository.findOne(1L);
-        final CartItem cartItem2 = cartItemRepository.findOne(2L);
-        final CartItem cartItem3 = cartItemRepository.findOne(3L);
+        final CartItem cartItem1 = cartItemRepository.findById(1L).orElseThrow();
+        final CartItem cartItem2 = cartItemRepository.findById(2L).orElseThrow();
+        final CartItem cartItem3 = cartItemRepository.findById(3L).orElseThrow();
         assertAll(
                 () -> assertThat(cartItem1).isNotNull(),
                 () -> assertThat(cartItem2).isNotNull(),
@@ -153,18 +150,15 @@ class CartItemRepositoryTest {
         );
 
         // when
-        cartItemRepository.deleteByIds(
+        cartItemRepository.deleteAllById(
                 List.of(cartItem1.getId(), cartItem2.getId(), cartItem3.getId())
         );
 
         // then
         assertAll(
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(1L))
-                        .isInstanceOf(CartItemNotFoundException.class),
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(2L))
-                        .isInstanceOf(CartItemNotFoundException.class),
-                () -> assertThatThrownBy(() -> cartItemRepository.findOne(3L))
-                        .isInstanceOf(CartItemNotFoundException.class)
+                () -> assertThat(cartItemRepository.findById(1L)).isEmpty(),
+                () -> assertThat(cartItemRepository.findById(2L)).isEmpty(),
+                () -> assertThat(cartItemRepository.findById(3L)).isEmpty()
         );
     }
 }
