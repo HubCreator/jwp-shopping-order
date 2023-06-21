@@ -1,7 +1,7 @@
 package cart.ui;
 
 import cart.application.ProductService;
-import cart.repository.MemberRepository;
+import cart.repository.simplejpa.MemberRepository;
 import cart.ui.dto.product.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

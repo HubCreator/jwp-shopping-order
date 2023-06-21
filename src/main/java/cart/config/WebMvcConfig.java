@@ -1,6 +1,6 @@
 package cart.config;
 
-import cart.repository.AuthRepository;
+import cart.repository.simplejpa.AuthRepository;
 import cart.ui.common.AuthArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package cart.repository;
+package cart.repository.simplejpa;
 
 import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;

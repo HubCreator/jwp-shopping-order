@@ -1,4 +1,4 @@
-package cart.repository;
+package cart.repository.simplejpa;
 
 import cart.domain.auth.Auth;
 import cart.domain.member.Member;

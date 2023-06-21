@@ -5,7 +5,7 @@ import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
 import cart.exception.authentication.InvalidFormatException;
 import cart.exception.authentication.PasswordNotMatchException;
-import cart.repository.AuthRepository;
+import cart.repository.simplejpa.AuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.MethodParameter;

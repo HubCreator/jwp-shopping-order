@@ -1,4 +1,4 @@
-package cart.repository;
+package cart.repository.simplejpa;
 
 import cart.domain.product.Product;
 import cart.exception.notfound.ProductNotFoundException;
