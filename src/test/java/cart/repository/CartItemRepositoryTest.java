@@ -93,7 +93,8 @@ class CartItemRepositoryTest {
         final Quantity quantity = cartItem.getQuantity();
 
         // when
-        cartItem.updateQuantity(cartItem.getAddedQuantity());
+//        cartItem.updateQuantity(cartItem.getAddedQuantity());
+        cartItem.addQuantity();
 
         // then
         assertThat(cartItem.getQuantity().getQuantity()).isEqualTo(quantity.getQuantity() + 1);
