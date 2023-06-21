@@ -1,16 +1,17 @@
 package cart.repository;
 
-import cart.domain.cartitem.CartItem;
 import cart.domain.order.Order;
 import cart.domain.order.OrderProduct;
 import cart.domain.product.ProductName;
+import cart.repository.datajpa.CartItemDataJpaRepository;
+import cart.repository.datajpa.OrderDataJpaRepository;
+import cart.repository.datajpa.OrderProductDataJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,19 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class OrderProductRepositoryTest {
 
     @Autowired
-    private EntityManager em;
+    private OrderDataJpaRepository orderRepository;
     @Autowired
-    private OrderRepository orderRepository;
+    private CartItemDataJpaRepository cartItemRepository;
     @Autowired
-    private OrderProductRepository orderProductRepository;
+    private OrderProductDataJpaRepository orderProductRepository;
 
     @DisplayName("주문에 해당하는 주문 상품을 조회할 수 있다.")
     @Test
     void findAllByOrderId() {
         // given
-        final Order order = em.find(Order.class, 1L);
-        final CartItem cartItem = em.find(CartItem.class, 1L);
-        final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderId(order.getId());
+        Order order = orderRepository.findById(1L).orElseThrow();
+        final List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder(order);
 
         // then
         assertAll(
