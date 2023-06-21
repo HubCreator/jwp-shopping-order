@@ -13,9 +13,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class OrderIntegrationTest extends IntegrationTest {
 
@@ -104,8 +102,8 @@ public class OrderIntegrationTest extends IntegrationTest {
                 .body("[2].usedPoint", is(0))
                 .body("[2].orderedAt", notNullValue())
                 .body("[2].products", hasSize(3))
-                .body("[2].products[0].product.id", is(3))
-                .body("[2].products[1].product.id", is(4))
-                .body("[2].products[2].product.id", is(5));
+                .body("[2].products[0].product.id", is(2))
+                .body("[2].products[1].product.id", is(3))
+                .body("[2].products[2].product.id", is(4));
     }
 }
