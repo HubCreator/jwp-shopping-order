@@ -24,7 +24,7 @@ public class MemberPoint {
         this.point = point;
     }
 
-    public static MemberPoint create() {
+    public static MemberPoint empty() {
         return new MemberPoint(0);
     }
 
@@ -40,6 +40,10 @@ public class MemberPoint {
 
     public MemberPoint addPointByTotalPrice(final ProductPrice totalPrice) {
         return new MemberPoint(point + (int) (totalPrice.getPrice() * APPLICATION_RATE));
+    }
+
+    public boolean isLowerThan(final MemberPoint point) {
+        return this.point < point.point;
     }
 
     @Override
@@ -64,9 +68,5 @@ public class MemberPoint {
         return "MemberPoint{" +
                 "point=" + point +
                 '}';
-    }
-
-    public boolean isLowerThan(final MemberPoint point) {
-        return this.point < point.point;
     }
 }

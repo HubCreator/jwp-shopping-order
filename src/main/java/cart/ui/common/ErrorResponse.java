@@ -1,6 +1,6 @@
 package cart.ui.common;
 
-public class ErrorResponse {
+public final class ErrorResponse {
 
     private final String message;
 

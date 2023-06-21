@@ -8,6 +8,7 @@ import cart.domain.auth.Auth;
 import cart.ui.dto.cartitem.CartItemResponse;
 import cart.ui.dto.cartitem.CartItemsPriceResponse;
 import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +27,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/cart-items")
+@RequiredArgsConstructor
 public class CartItemApiController {
 
     private final CartItemService cartItemService;
-
-    public CartItemApiController(CartItemService cartItemService) {
-        this.cartItemService = cartItemService;
-    }
 
     @PostMapping
     public ResponseEntity<Void> addCartItems(final Auth auth,

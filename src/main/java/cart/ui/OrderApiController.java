@@ -5,6 +5,7 @@ import cart.application.dto.order.OrderRequest;
 import cart.domain.auth.Auth;
 import cart.domain.order.Order;
 import cart.ui.dto.order.OrderDetailResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +23,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderApiController {
 
     private final OrderService orderService;
-
-    public OrderApiController(final OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @PostMapping
     public ResponseEntity<Void> order(final Auth auth,

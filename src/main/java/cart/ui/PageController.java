@@ -20,7 +20,8 @@ public class PageController {
 
     @GetMapping("/admin")
     public String admin(Model model) {
-        final List<ProductResponse> productResponses = productService.getAllProducts().stream()
+        final List<ProductResponse> productResponses = productService.getAllProducts()
+                .stream()
                 .map(ProductResponse::new)
                 .collect(Collectors.toList());
         model.addAttribute("products", productResponses);

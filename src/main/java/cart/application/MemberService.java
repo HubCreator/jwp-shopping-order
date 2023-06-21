@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberDataJpaRepository memberDataJpaRepository;
+    private final MemberDataJpaRepository memberRepository;
 
     public MemberPoint getPoint(final Auth auth) {
-        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
+        final Member member = memberRepository.findByEmail(auth.getEmail())
                 .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
         return member.getPoint();
     }

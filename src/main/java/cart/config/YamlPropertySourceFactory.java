@@ -8,13 +8,14 @@ import org.springframework.core.io.support.PropertySourceFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 
 public class YamlPropertySourceFactory implements PropertySourceFactory {
     @Override
     public PropertySource<?> createPropertySource(final String name, final EncodedResource resource)
             throws IOException {
-        return new PropertiesPropertySource(resource.getResource().getFilename(), loadYamlIntoProperties(resource));
+        return new PropertiesPropertySource(Objects.requireNonNull(resource.getResource().getFilename()), loadYamlIntoProperties(resource));
     }
 
     private Properties loadYamlIntoProperties(EncodedResource resource) throws FileNotFoundException {

@@ -1,6 +1,6 @@
 package cart.domain.product;
 
-import cart.domain.BaseTimeEntity;
+import cart.domain.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

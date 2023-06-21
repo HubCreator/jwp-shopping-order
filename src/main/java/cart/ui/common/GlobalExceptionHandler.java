@@ -4,8 +4,7 @@ import cart.exception.authentication.AuthenticationException;
 import cart.exception.authorization.AuthorizationException;
 import cart.exception.business.BusinessException;
 import cart.exception.notfound.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -19,9 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(final AuthenticationException e) {

@@ -1,6 +1,6 @@
 package cart.domain.order;
 
-import cart.domain.BaseTimeEntity;
+import cart.domain.common.BaseTimeEntity;
 import cart.domain.member.Member;
 import cart.domain.product.ProductPrice;
 import cart.exception.authorization.OrderAccessForbiddenException;
@@ -70,14 +70,6 @@ public class Order extends BaseTimeEntity {
                 .mapToInt(op -> op.getProductPrice().getPrice() * op.getQuantityValue())
                 .sum();
         return new ProductPrice(totalPrice);
-    }
-
-    public Integer getUsedPointValue() {
-        return usedPoint.getUsedPoint();
-    }
-
-    public Integer getDeliveryFeeValue() {
-        return deliveryFee.getDeliveryFee();
     }
 
     @Override

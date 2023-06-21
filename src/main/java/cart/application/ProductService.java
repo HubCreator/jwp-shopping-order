@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductDataJpaRepository productDataJpaRepository;
+    private final ProductDataJpaRepository productRepository;
 
     @Transactional
     public Long createProduct(final ProductRequest request) {
@@ -26,22 +26,22 @@ public class ProductService {
                 new ProductName(request.getName()),
                 new ProductPrice(request.getPrice()),
                 new ProductImageUrl(request.getImageUrl()));
-        productDataJpaRepository.save(product);
+        productRepository.save(product);
         return product.getId();
     }
 
     public Product getProductById(final Long productId) {
-        return productDataJpaRepository.findById(productId)
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     public List<Product> getAllProducts() {
-        return productDataJpaRepository.findAll();
+        return productRepository.findAll();
     }
 
     @Transactional
     public void updateProduct(final Long productId, final ProductRequest request) {
-        final Product findProduct = productDataJpaRepository.findById(productId)
+        final Product findProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
         final Product updatedProduct = new Product(
                 productId,
@@ -53,6 +53,8 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(final Long productId) {
-        productDataJpaRepository.deleteById(productId);
+        final Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        productRepository.delete(product);
     }
 }

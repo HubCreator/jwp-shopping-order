@@ -1,6 +1,6 @@
 package cart.domain.member;
 
-import cart.domain.BaseTimeEntity;
+import cart.domain.common.BaseTimeEntity;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.PointAbusedException;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public Member(final long id, final MemberEmail email, final MemberPassword password) {
-        this(id, email, password, MemberPoint.create());
+        this(id, email, password, MemberPoint.empty());
     }
 
     public Member(final long id, final MemberEmail email, final MemberPassword password, final MemberPoint point) {
@@ -65,11 +65,6 @@ public class Member extends BaseTimeEntity {
 
     public String getPasswordValue() {
         return password.getPassword();
-    }
-
-
-    public Integer getPointValue() {
-        return point.getPoint();
     }
 
     @Override

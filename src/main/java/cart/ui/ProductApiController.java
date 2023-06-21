@@ -3,6 +3,7 @@ package cart.ui;
 import cart.application.ProductService;
 import cart.application.dto.product.ProductRequest;
 import cart.ui.dto.product.ProductResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,13 +22,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductApiController {
 
     private final ProductService productService;
-
-    public ProductApiController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
