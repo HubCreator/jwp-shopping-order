@@ -6,9 +6,8 @@ import cart.domain.cartitem.CartItem;
 import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
-import cart.repository.AuthRepository;
-import cart.repository.CartItemRepository;
-import cart.repository.MemberRepository;
+import cart.repository.datajpa.CartItemDataJpaRepository;
+import cart.repository.datajpa.MemberDataJpaRepository;
 import cart.ui.dto.cartitem.TotalPriceAndDeliveryFeeDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,19 +26,19 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class CartItemServiceTest {
 
     @Autowired
-    private AuthRepository authRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
     private CartItemService cartItemService;
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private MemberDataJpaRepository memberRepository;
+    @Autowired
+    private CartItemDataJpaRepository cartItemRepository;
 
     private Auth auth;
 
     @BeforeEach
     void setUp() {
-        auth = authRepository.findByEmail(new MemberEmail("a@a.com"));
+        Member member = memberRepository.findByEmail(new MemberEmail("a@a.com"))
+                .orElseThrow();
+        auth = new Auth(member.getEmail(), member.getPassword());
     }
 
     @DisplayName("장바구니에 상품을 추가할 때, 이미 해당 상품이 존재하면 수량만 하나 추가한다.")
@@ -47,12 +46,12 @@ public class CartItemServiceTest {
     void addCartItem() {
         // given
         final CartItemRequest cartItemRequest = new CartItemRequest(1L);
-        final Member member = memberRepository.findByEmail(auth.getEmail());
+        final Member findMember = memberRepository.findByEmail(auth.getEmail()).orElseThrow();
 
         // when
         cartItemService.addCartItem(auth, cartItemRequest);
-        final CartItem cartItem = cartItemRepository.findOne(1L);
-        final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
+        final CartItem cartItem = cartItemRepository.findById(1L).orElseThrow();
+        final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(findMember.getId());
 
         // then
         assertThat(cartItem.getQuantity()).isEqualTo(new Quantity(3));
