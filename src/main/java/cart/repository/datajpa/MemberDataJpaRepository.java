@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MemberDataJpaRepository extends JpaRepository<Member, Long> {
 
-    Optional<Member> findByEmail(MemberEmail email);
+    Optional<Member> findByEmail(final MemberEmail email);
 
     @Query("select m.point from Member m where m.email = :email")
     Optional<MemberPoint> getPointByEmail(@Param("email") final MemberEmail email);
