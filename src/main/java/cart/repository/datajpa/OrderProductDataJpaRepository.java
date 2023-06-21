@@ -1,5 +1,6 @@
 package cart.repository.datajpa;
 
+import cart.domain.member.Member;
 import cart.domain.order.Order;
 import cart.domain.order.OrderProduct;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -11,4 +12,8 @@ public interface OrderProductDataJpaRepository extends JpaRepository<OrderProduc
 
     @EntityGraph(attributePaths = {"order"})
     List<OrderProduct> findAllByOrder(final Order order);
+
+
+    @EntityGraph(attributePaths = {"order"})
+    List<OrderProduct> findAllByOrderMember(final Member member);
 }

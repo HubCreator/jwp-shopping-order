@@ -7,21 +7,12 @@ import cart.domain.cartitem.Quantity;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPoint;
-import cart.domain.order.DeliveryFee;
-import cart.domain.order.Order;
-import cart.domain.order.OrderProduct;
-import cart.domain.order.SavedPoint;
-import cart.domain.order.UsedPoint;
+import cart.domain.order.*;
 import cart.domain.product.Product;
 import cart.domain.product.ProductName;
 import cart.domain.product.ProductPrice;
 import cart.exception.business.order.InvalidPointUseException;
-import cart.repository.AuthRepository;
-import cart.repository.CartItemRepository;
-import cart.repository.MemberRepository;
-import cart.repository.OrderProductRepository;
-import cart.repository.OrderRepository;
-import cart.repository.ProductRepository;
+import cart.repository.datajpa.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -45,19 +36,17 @@ public class OrderServiceTest {
     @Autowired
     private EntityManager em;
     @Autowired
-    private AuthRepository authRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
     private OrderService orderService;
     @Autowired
-    private ProductRepository productRepository;
+    private MemberDataJpaRepository memberRepository;
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private ProductDataJpaRepository productRepository;
     @Autowired
-    private OrderRepository orderRepository;
+    private CartItemDataJpaRepository cartItemRepository;
     @Autowired
-    private OrderProductRepository orderProductRepository;
+    private OrderDataJpaRepository orderRepository;
+    @Autowired
+    private OrderProductDataJpaRepository orderProductRepository;
 
     @Nested
     @DisplayName("상품을 주문할 때에는")
@@ -70,10 +59,10 @@ public class OrderServiceTest {
 
         @BeforeEach
         void setUp() {
-            auth = authRepository.findByEmail(new MemberEmail("a@a.com"));
-            member = memberRepository.findByEmail(auth.getEmail());
-            product1 = productRepository.findOne(1L);
-            product2 = productRepository.findOne(2L);
+            member = memberRepository.findByEmail(new MemberEmail("a@a.com")).orElseThrow();
+            auth = new Auth(member.getEmail(), member.getPassword());
+            product1 = productRepository.findById(1L).orElseThrow();
+            product2 = productRepository.findById(2L).orElseThrow();
         }
 
         @Nested
@@ -93,7 +82,7 @@ public class OrderServiceTest {
 
                 final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), usedPoint);
                 final Long orderId = orderService.order(auth, orderRequest);
-                order = orderRepository.findOne(orderId);
+                order = orderRepository.findById(orderId).orElseThrow();
             }
 
             @DisplayName("배송비 3천원을 추가하지 않는다.")
@@ -123,8 +112,8 @@ public class OrderServiceTest {
                 cartItemRepository.save(cartItem1);
                 cartItemRepository.save(cartItem2);
 
-                final CartItem findCartItem1 = cartItemRepository.findOne(cartItem1.getId());
-                final CartItem findCartItem2 = cartItemRepository.findOne(cartItem2.getId());
+                final CartItem findCartItem1 = cartItemRepository.findById(cartItem1.getId()).orElseThrow();
+                final CartItem findCartItem2 = cartItemRepository.findById(cartItem2.getId()).orElseThrow();
                 final OrderRequest orderRequest = new OrderRequest(List.of(findCartItem1.getId(), findCartItem2.getId()), usedPoint);
                 final Long orderId = orderService.order(auth, orderRequest);
                 order = em.find(Order.class, orderId);
@@ -150,8 +139,8 @@ public class OrderServiceTest {
 
             @BeforeEach
             void setUp() {
-                order = orderRepository.findOne(1L);
-                orderProducts = orderProductRepository.findAllByMemberId(member.getId());
+                order = orderRepository.findById(1L).orElseThrow();
+                orderProducts = orderProductRepository.findAllByOrderMember(member);
             }
 
             @DisplayName("주문 내역을 볼 수 있다.")
@@ -189,7 +178,7 @@ public class OrderServiceTest {
                 final OrderRequest orderRequest = new OrderRequest(List.of(cartItem1.getId(), cartItem2.getId()), 0);
                 final Long orderId = orderService.order(auth, orderRequest);
 
-                final List<CartItem> cartItems = cartItemRepository.findAllByMember(member);
+                final List<CartItem> cartItems = cartItemRepository.findAllByMemberId(member.getId());
 
                 // when, then
                 assertThat(cartItems).doesNotContain(
@@ -211,7 +200,7 @@ public class OrderServiceTest {
                 final Long orderId = orderService.order(auth, orderRequest);
 
                 // when
-                final Order order = orderRepository.findOne(orderId);
+                final Order order = orderRepository.findById(orderId).orElseThrow();
 
                 // then
                 assertAll(
