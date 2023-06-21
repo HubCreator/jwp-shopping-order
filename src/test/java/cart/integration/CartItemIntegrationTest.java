@@ -7,7 +7,7 @@ import cart.application.dto.product.ProductRequest;
 import cart.domain.member.Member;
 import cart.domain.member.MemberEmail;
 import cart.domain.member.MemberPassword;
-import cart.repository.MemberRepository;
+import cart.repository.datajpa.MemberDataJpaRepository;
 import cart.ui.dto.cartitem.CartItemResponse;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 public class CartItemIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberDataJpaRepository memberRepository;
 
     private Long productId;
     private Long productId2;
@@ -44,8 +44,8 @@ public class CartItemIntegrationTest extends IntegrationTest {
         productId = createProduct(new ProductRequest("치킨", 10_000, "http://example.com/chicken.jpg"));
         productId2 = createProduct(new ProductRequest("피자", 15_000, "http://example.com/pizza.jpg"));
 
-        member = memberRepository.findOne(1L);
-        member2 = memberRepository.findOne(2L);
+        member = memberRepository.findById(1L).orElseThrow();
+        member2 = memberRepository.findById(2L).orElseThrow();
     }
 
     private ExtractableResponse<Response> requestAddCartItem(Member member, CartItemRequest cartItemRequest) {

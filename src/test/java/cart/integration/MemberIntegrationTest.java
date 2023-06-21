@@ -1,7 +1,7 @@
 package cart.integration;
 
 import cart.domain.member.Member;
-import cart.repository.MemberRepository;
+import cart.repository.datajpa.MemberDataJpaRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 public class MemberIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberDataJpaRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -25,7 +25,7 @@ public class MemberIntegrationTest extends IntegrationTest {
     @Test
     void getPoint() {
         // given
-        final Member member = memberRepository.findOne(1L);
+        final Member member = memberRepository.findById(1L).orElseThrow();
 
         // when, then
         RestAssured

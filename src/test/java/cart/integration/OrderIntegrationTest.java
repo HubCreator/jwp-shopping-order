@@ -2,7 +2,7 @@ package cart.integration;
 
 import cart.application.dto.order.OrderRequest;
 import cart.domain.member.Member;
-import cart.repository.MemberRepository;
+import cart.repository.datajpa.MemberDataJpaRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.*;
 public class OrderIntegrationTest extends IntegrationTest {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberDataJpaRepository memberRepository;
 
     private Member member;
     private final OrderRequest orderRequest = new OrderRequest(List.of(1L, 2L), 1000);
@@ -27,7 +27,7 @@ public class OrderIntegrationTest extends IntegrationTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        member = memberRepository.findOne(1L);
+        member = memberRepository.findById(1L).orElseThrow();
 
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
