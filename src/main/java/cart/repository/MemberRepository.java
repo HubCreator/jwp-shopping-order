@@ -34,7 +34,7 @@ public class MemberRepository {
                     .setParameter("email", email)
                     .getSingleResult();
         } catch (final NoResultException e) {
-            throw new MemberNotFoundException(email, e);
+            throw new MemberNotFoundException(email);
         }
     }
 

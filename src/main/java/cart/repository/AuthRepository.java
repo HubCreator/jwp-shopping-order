@@ -23,7 +23,7 @@ public class AuthRepository {
                     .getSingleResult();
             return new Auth(member.getEmail(), member.getPassword());
         } catch (final NoResultException e) {
-            throw new MemberNotFoundException(email, e);
+            throw new MemberNotFoundException(email);
         }
     }
 }

@@ -3,7 +3,8 @@ package cart.application;
 import cart.domain.auth.Auth;
 import cart.domain.member.Member;
 import cart.domain.member.MemberPoint;
-import cart.repository.MemberRepository;
+import cart.exception.notfound.MemberNotFoundException;
+import cart.repository.datajpa.MemberDataJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberDataJpaRepository memberDataJpaRepository;
 
     public MemberPoint getPoint(final Auth auth) {
-        final Member member = memberRepository.findByEmail(auth.getEmail());
-        return memberRepository.findByEmail(member.getEmail())
-                .getPoint();
+        final Member member = memberDataJpaRepository.findByEmail(auth.getEmail())
+                .orElseThrow(() -> new MemberNotFoundException(auth.getEmail()));
+        return member.getPoint();
     }
 }

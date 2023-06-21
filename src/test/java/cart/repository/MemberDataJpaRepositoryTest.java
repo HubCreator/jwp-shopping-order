@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
 @SpringBootTest
-class MemberRepositoryTest {
+class MemberDataJpaRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
