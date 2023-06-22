@@ -23,5 +23,5 @@ public interface CartItemDataJpaRepository extends JpaRepository<CartItem, Long>
 
     @EntityGraph(attributePaths = {"member"})
     @Override
-    List<CartItem> findAllById(final Iterable<Long> longs);
+    List<CartItem> findAllById(final Iterable<Long> ids);
 }
