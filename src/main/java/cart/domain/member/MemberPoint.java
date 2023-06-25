@@ -2,22 +2,21 @@ package cart.domain.member;
 
 import cart.domain.product.ProductPrice;
 import cart.exception.business.member.InvalidMemberPointException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberPoint {
 
     private static final double APPLICATION_RATE = 0.1;
 
-    private final int point;
-
-    protected MemberPoint() {
-        this.point = -1;
-    }
+    private int point;
 
     public MemberPoint(final Integer point) {
         validate(point);

@@ -1,19 +1,18 @@
 package cart.domain.product;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductName {
 
-    private final String name;
-
-    protected ProductName() {
-        this.name = null;
-    }
+    private String name;
 
     public ProductName(final String name) {
         this.name = name;

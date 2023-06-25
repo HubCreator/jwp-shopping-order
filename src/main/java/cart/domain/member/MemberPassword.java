@@ -1,19 +1,18 @@
 package cart.domain.member;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberPassword {
 
-    private final String password;
-
-    protected MemberPassword() {
-        this.password = null;
-    }
+    private String password;
 
     public MemberPassword(final String password) {
         this.password = password;

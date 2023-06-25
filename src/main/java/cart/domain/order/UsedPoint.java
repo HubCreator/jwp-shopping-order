@@ -1,20 +1,19 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidUsedPointException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UsedPoint {
 
-    private final int usedPoint;
-
-    protected UsedPoint() {
-        this.usedPoint = -1;
-    }
+    private int usedPoint;
 
     public UsedPoint(final int usedPoint) {
         validate(usedPoint);

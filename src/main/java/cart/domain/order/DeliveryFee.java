@@ -1,20 +1,19 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidDeliveryFeeException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryFee {
 
-    private final int deliveryFee;
-
-    protected DeliveryFee() {
-        this.deliveryFee = -1;
-    }
+    private int deliveryFee;
 
     public DeliveryFee(final int deliveryFee) {
         validate(deliveryFee);

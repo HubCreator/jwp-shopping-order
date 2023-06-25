@@ -1,20 +1,19 @@
 package cart.domain.member;
 
 import cart.exception.business.member.InvalidMemberEmailException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEmail {
 
-    private final String email;
-
-    protected MemberEmail() {
-        this.email = null;
-    }
+    private String email;
 
     public MemberEmail(final String email) {
         validate(email);

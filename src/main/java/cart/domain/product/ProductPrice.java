@@ -1,20 +1,19 @@
 package cart.domain.product;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductPrice {
 
-    private final int price;
-
-    protected ProductPrice() {
-        this.price = -1;
-    }
-
+    private int price;
+    
     public ProductPrice(final int price) {
         this.price = price;
     }

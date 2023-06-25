@@ -1,22 +1,21 @@
 package cart.domain.cartitem;
 
 import cart.exception.business.cartitem.InvalidCartItemQuantityException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Quantity {
 
     private static final int INITIAL_VALUE = 1;
 
-    private final int quantity;
-
-    protected Quantity() {
-        this.quantity = -1;
-    }
+    private int quantity;
 
     public Quantity(final int quantity) {
         validate(quantity);

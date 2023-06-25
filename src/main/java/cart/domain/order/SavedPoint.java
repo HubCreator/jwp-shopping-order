@@ -1,20 +1,19 @@
 package cart.domain.order;
 
 import cart.exception.business.order.InvalidSavedPointException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SavedPoint {
 
-    private final int savedPoint;
-
-    protected SavedPoint() {
-        this.savedPoint = -1;
-    }
+    private int savedPoint;
 
     public SavedPoint(final int savedPoint) {
         validate(savedPoint);

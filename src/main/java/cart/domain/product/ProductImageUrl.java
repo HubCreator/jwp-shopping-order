@@ -1,19 +1,18 @@
 package cart.domain.product;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductImageUrl {
 
-    private final String imageUrl;
-
-    protected ProductImageUrl() {
-        this.imageUrl = null;
-    }
+    private String imageUrl;
 
     public ProductImageUrl(final String imageUrl) {
         this.imageUrl = imageUrl;
